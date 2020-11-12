@@ -3,9 +3,9 @@
 
 * [BoM Water Data service ](http://www.bom.gov.au/waterdata/services)
 * [BoM Notes](http://www.bom.gov.au/metadata/catalogue/19115/ANZCW0503900528)
-* [BoM Guide to Sensor Observation Services (SOS2)](Guide_to_Sensor_Observation_Services_(SOS2)_for_Water_Data_Online_v1.0.1.pdf)
+* [BoM Guide to Sensor Observation Services (SOS2)](../doc/Guide_to_Sensor_Observation_Services_(SOS2)_for_Water_Data_Online_v1.0.1.pdf)
 
-## [The following cells implement requests that access the BoM SOS2 service.](Guide_to_Sensor_Observation_Services_(SOS2)_for_Water_Data_Online_v1.0.1.pdf#page=14) 
+## [The following cells implement requests that access the BoM SOS2 service.](../doc/Guide_to_Sensor_Observation_Services_(SOS2)_for_Water_Data_Online_v1.0.1.pdf#page=14) 
 ### GetCapabilties
 Lists services available and the filters that can be used to select data output by those services. It also provides an overview of parameters, time series types and geographic area covered by the services.
 ### GetFeatureOfInterest
@@ -15,7 +15,7 @@ Lists the type of data available for a ‘feature of interest’ and its coverag
 ### GetObservation
 Returns observations of a specified ‘feature of interest’ and parameter, within a specific time series type. Each observation has a datetime, value, quality and interpolation type.
 
-### [Parameter currently available via SOS2](Guide_to_Sensor_Observation_Services_(SOS2)_for_Water_Data_Online_v1.0.1.pdf#page=13)
+### [Parameter currently available via SOS2](../doc/Guide_to_Sensor_Observation_Services_(SOS2)_for_Water_Data_Online_v1.0.1.pdf#page=13)
 |Parameter | Water regulation Data Subcategory |
 |:--- |:--- |
 |Dry Air Temperature  |  4f  |
@@ -34,7 +34,7 @@ Returns observations of a specified ‘feature of interest’ and parameter, wit
 |Water pH  | 9g  |
 |Water Temperature  | 9h  |
 |Wind Direction  | 4  |
-### [Timeseries pattern and aggreated available](Guide_to_Sensor_Observation_Services_(SOS2)_for_Water_Data_Online_v1.0.1.pdf#page=37)
+### [Timeseries pattern and aggreated available](../doc/Guide_to_Sensor_Observation_Services_(SOS2)_for_Water_Data_Online_v1.0.1.pdf#page=37)
 |Time series name | Procedure | Identifier Time series description |
 |:---|:---|:---|
 |DMQaQc.Merged.DailyMean.24HR| Pat1_C_B_1_DailyMean or Pat9_C_B_1_DailyMean | DMQaQc.Merged.AsStored.1 timeseries aggregated to daily means, reported from midnight to midnight. |
