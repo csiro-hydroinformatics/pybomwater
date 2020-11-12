@@ -1,11 +1,11 @@
 import setuptools
 
-setuptools.setup(name='bom_water',
+setuptools.setup(name='core',
       version='0.1.1',
       description='A tool for requesting data from BoM Water Data service.',
       author='C.S.I.R.O.',
     #   packages = setuptools.find_packages(),
-      packages=['bom_water',
+      packages=['core',
                 'test',
       ],
       install_requires=[
@@ -16,7 +16,6 @@ setuptools.setup(name='bom_water',
             'xmltodict',
             'os',
             'pandas'
-          
       ],
       url='https://github.com/csiro-hydroinformatics/bom_water',
       zip_safe=False)

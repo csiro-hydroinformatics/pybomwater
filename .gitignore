@@ -1,2 +1,6 @@
 
 .idea/
+
+bom_water.egg-info/
+
+core/__pycache__/

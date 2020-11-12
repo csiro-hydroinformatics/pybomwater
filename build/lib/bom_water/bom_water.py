@@ -2,10 +2,6 @@ import requests
 import iso8601
 import pytz
 import json5
-import xmltodict
-import os
-import pandas as pd
-import xml.etree.ElementTree as ET
 
 class Builder_Property():
     def __init__(self):
@@ -45,7 +41,7 @@ class Procedure(Builder_Property):
         pass
 
 
-class Bom_Water():
+class Bom_Water:
 
     def __init__(self):
         self.actions = Action()
@@ -57,7 +53,7 @@ class Bom_Water():
     def init_properties(self):
         getCap_json = ''
         with open('waterML_GetCapabilities.json') as json_file:
-            getCap_json = json5.load(json_file)
+            getCap_json = json.load(json_file)
 
         '''actions'''
         #         operations = getCap_json['sos:Capabilities']['ows:OperationsMetadata']['ows:Operation']
@@ -79,7 +75,7 @@ class Bom_Water():
         '''Features'''
         getfeature_json = ''
         with open('bomWater_all_foi.json') as json_file:
-            getfeature_json = json5.load(json_file)
+            getfeature_json = json.load(json_file)
         features = getfeature_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse'][
             'sos:featureMember']
         for feat in features:
@@ -210,8 +206,8 @@ class Bom_Water():
         data = [[e.text for e in root.findall('.//{http://www.opengis.net/waterml/2.0}' + t)]
                 for t in ['time', 'value']]
 
-        dd = [(self._parse_time(t),
-               self._parse_float(v))
+        dd = [(_parse_time(t),
+               _parse_float(v))
               for t, v in zip(*data)]
 
         if raw:
@@ -222,7 +218,7 @@ class Bom_Water():
     def xml_to_json(self, xml_text, file):
         data_dict = dict(xmltodict.parse(xml_text))
         with open(file, 'w+') as json_file:
-            json5.dump(data_dict, json_file, indent=4, sort_keys=True)
+            json.dump(data_dict, json_file, indent=4, sort_keys=True)
 
         with open(file) as json_file:
-            return json5.load(json_file)
+            return json.load(json_file)
