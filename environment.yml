@@ -1,0 +1,12 @@
+name: bom_water_env
+channels:
+  - defaults
+  - conda-forge # voila and ipyfilechooser found there.
+dependencies: 
+  - python
+  - requests
+  - iso8601
+  - pytz
+  - pip
+  - pip:
+    - json
