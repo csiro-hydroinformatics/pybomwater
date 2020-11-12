@@ -1,17 +1,22 @@
 import setuptools
 
 setuptools.setup(name='bom_water',
-      version='0.1.0',
+      version='0.1.1',
       description='A tool for requesting data from BoM Water Data service.',
       author='C.S.I.R.O.',
     #   packages = setuptools.find_packages(),
       packages=['bom_water',
-                'bom_water.test',
+                'test',
       ],
       install_requires=[
-          'requests',
-          'iso8601',
-          'pytz',
+            'requests',
+            'iso8601',
+            'pytz',
+            'json5',
+            'xmltodict',
+            'os',
+            'pandas'
+          
       ],
       url='https://github.com/csiro-hydroinformatics/bom_water',
       zip_safe=False)
