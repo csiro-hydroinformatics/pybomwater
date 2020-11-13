@@ -1,7 +1,13 @@
 import requests
 import iso8601
 import pytz
-import json5
+import json
+import xmltodict
+import os
+import pandas as pd
+import xml.etree.ElementTree as ET
+
+
 
 class Builder_Property():
     def __init__(self):
@@ -11,11 +17,11 @@ class Builder_Property():
         self.__dict__[varname] = value
 
 
-class Action():
+class Action:
     def __init__(self):
         pass
 
-    GetDescribeSensor = 'http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=DescribeSensor'
+    # GetDescribeSensor = 'http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=DescribeSensor'
     GetCapabilities = 'http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=GetCapabilities'
     GetDataAvailability = "http://www.opengis.net/def/serviceOperation/sos/daRetrieval/2.0/GetDataAvailability"
     GetObservation = "http://www.opengis.net/def/serviceOperation/sos/core/2.0/GetObservation"
@@ -25,7 +31,6 @@ class Action():
 class Feature(Builder_Property):
     def __init__(self):
         pass
-
 
 class Property(Builder_Property):
     def __init__(self):
@@ -41,7 +46,7 @@ class Procedure(Builder_Property):
         pass
 
 
-class Bom_Water:
+class BomWater():
 
     def __init__(self):
         self.actions = Action()
@@ -52,7 +57,7 @@ class Bom_Water:
 
     def init_properties(self):
         getCap_json = ''
-        with open('waterML_GetCapabilities.json') as json_file:
+        with open('..\cache\waterML_GetCapabilities.json') as json_file:
             getCap_json = json.load(json_file)
 
         '''actions'''
@@ -74,15 +79,15 @@ class Bom_Water:
 
         '''Features'''
         getfeature_json = ''
-        with open('bomWater_all_foi.json') as json_file:
-            getfeature_json = json.load(json_file)
-        features = getfeature_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse'][
-            'sos:featureMember']
-        for feat in features:
-            long_statioId = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
-            name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
-            #             stationId = os.path.basename(long_statioId)
-            self.features.set_value(name, long_statioId)
+        # with open('..\cache\waterML_all_foi.json') as json_file:
+        #     getfeature_json = json.load(json_file)
+        # features = getfeature_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse'][
+        #     'sos:featureMember']
+        # for feat in features:
+        #     long_statioId = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
+        #     name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
+        #     #             stationId = os.path.basename(long_statioId)
+        #     self.features.set_value(name, long_statioId)
 
     def xml(self):
         ''' XML payload builder'''
@@ -206,8 +211,8 @@ class Bom_Water:
         data = [[e.text for e in root.findall('.//{http://www.opengis.net/waterml/2.0}' + t)]
                 for t in ['time', 'value']]
 
-        dd = [(_parse_time(t),
-               _parse_float(v))
+        dd = [(self._parse_time(t),
+               self._parse_float(v))
               for t, v in zip(*data)]
 
         if raw:

@@ -66,26 +66,4 @@ Returns observations of a specified ‘feature of interest’ and parameter, wit
 |DMQaQc.Merged.MonthlyMean.CalMonth|Pat6_C_B_1_MonthlyMean or Pat7_C_B_1_MonthlyMean | DMQaQc.Merged.AsStored.1 timeseries aggregated to monthly means.|
 |DMQaQc.Merged.YearlyMean.CalYear |Pat6_C_B_1_YearlyMean or Pat7_C_B_1_YearlyMean | DMQaQc.Merged.AsStored.1 timeseries aggregated to yearly means.|
 
-## To Do
-- Enable multi site queries
-    - Using bounding box or shapefiles
-    - Process the response into individual results (xml parsing needs to identify the individual site results for the multi site response)
-- Enable more complex time filters (current is between dates)
-    - Enable after a date
-    - Enable outside of a period
-- Plot point results on map
-- Enable pop up on map point to display site info 
-- Extract observation offerings 'Procedure Identifiers' (eg Pat1_C_B_1_DailyMean or Pat9_C_B_1_DailyMean) and observed properties 'Parameters' (eg Water Coarse Level) into lists from 'GetCapabilities'
-    - Build and populate widgets to allow easy selection of these variables
-- Further xml parsing from responses;
-    - timeseries
-    - feature properties
-        - Name
-        - id
-        - location
-        - available properties (Procedures, Parameters)
-- Develop a demo using Loci
-- Maintain environment and env setup
-- Create a python package for core logic
-- Develop a workflow using core package demonstrating functionality
-- Enable GetDataAvailability to use SOS. Currently implemented using KVP method
+## [Task list](https://github.com/csiro-hydroinformatics/bom_water/blob/main/tasklist.md)

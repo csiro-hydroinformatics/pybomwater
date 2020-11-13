@@ -7,7 +7,7 @@ import os
 here = os.path.abspath(os.path.dirname(__file__))
 
 verstr = 'unknown'
-VERSIONFILE = "core/_version.py"
+VERSIONFILE = "bom_water/_version.py"
 with open(VERSIONFILE, "r")as f:
     verstrline = f.read().strip()
     pattern = re.compile(r"__version__ = ['\"](.*)['\"]")
@@ -17,6 +17,8 @@ if mo:
 else:
     raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 CLASSIFIERS = ['Development Status :: 3 - Alpha',
                 'Intended Audience :: Science/Research',
@@ -29,13 +31,13 @@ CLASSIFIERS = ['Development Status :: 3 - Alpha',
                 ]
 
 setuptools.setup(
-    name='core',
+    name='bomwater', # package names need not start with 'py'
     version=verstr,
     description='A tool for requesting data from BoM Water Data service.',
     author='Andrew Freebairn',
     author_email='andrew.freebairn@csiro.au',
     #   packages = setuptools.find_packages(),
-    packages=['core'],
+    packages=['bom_water'],
     install_requires=[
         'requests',
         'iso8601',
@@ -45,7 +47,7 @@ setuptools.setup(
         'pandas'
     ],
     classifiers=CLASSIFIERS,
-    url='https://github.com/csiro-hydroinformatics/bom_water',
+    url='https://github.com/csiro-hydroinformatics/pybomwater',
     zip_safe=False)
 
 # https://packaging.python.org/tutorials/packaging-projects/
