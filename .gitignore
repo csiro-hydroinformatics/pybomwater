@@ -3,4 +3,10 @@
 
 bom_water.egg-info/
 
-core/__pycache__/
+bom_water/__pycache__/
+
+pybomwater.egg-info/
+
+dist/
+
+core.egg-info/
