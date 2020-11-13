@@ -23,7 +23,7 @@ with open("README.md", "r") as fh:
 CLASSIFIERS = ['Development Status :: 3 - Alpha',
                 'Intended Audience :: Science/Research',
                 'Topic :: Scientific/Engineering :: Hydrology',
-                'License :: BSD-3',
+                'License :: OSI Approved :: BSD License',
                 'Operating System :: OS Independent',
                 'Programming Language :: Python',
                 'Programming Language :: Python :: 3.6',
