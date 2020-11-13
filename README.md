@@ -66,3 +66,4 @@ Returns observations of a specified ‘feature of interest’ and parameter, wit
 |DMQaQc.Merged.MonthlyMean.CalMonth|Pat6_C_B_1_MonthlyMean or Pat7_C_B_1_MonthlyMean | DMQaQc.Merged.AsStored.1 timeseries aggregated to monthly means.|
 |DMQaQc.Merged.YearlyMean.CalYear |Pat6_C_B_1_YearlyMean or Pat7_C_B_1_YearlyMean | DMQaQc.Merged.AsStored.1 timeseries aggregated to yearly means.|
 
+## [Task list](https://github.com/csiro-hydroinformatics/bom_water/blob/main/tasklist.md)

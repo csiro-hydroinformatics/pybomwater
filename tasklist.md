@@ -1,0 +1,23 @@
+## To Do
+- [ ] Enable multi site queries
+    - [ ] Using bounding box or shapefiles
+    - [ ] Process the response into individual results (xml parsing needs to identify the individual site results for the multi site response)
+- [ ] Enable more complex time filters (current is between dates)
+    - [ ] Enable after a date
+    - [ ] Enable outside of a period
+- [ ] Plot point results on map
+- [ ] Enable pop up on map point to display site info 
+- [ ] Extract observation offerings 'Procedure Identifiers' (eg Pat1_C_B_1_DailyMean or Pat9_C_B_1_DailyMean) and observed properties 'Parameters' (eg Water Coarse Level) into lists from 'GetCapabilities'
+    - [ ] Build and populate widgets to allow easy selection of these variables
+- [ ] Further xml parsing from responses;
+    - [ ] timeseries
+    - [ ] feature properties
+        - Name
+        - id
+        - location
+        - available properties (Procedures, Parameters)
+- [ ] Develop a demo using Loci
+- [ ] Maintain environment and env setup
+- [ ] Create a python package for core logic
+- [ ] Develop a workflow using core package demonstrating functionality
+- [ ] Enable GetDataAvailability to use SOS. Currently implemented using KVP method
