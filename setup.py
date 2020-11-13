@@ -14,7 +14,6 @@ setuptools.setup(name='core',
             'pytz',
             'json5',
             'xmltodict',
-            'os',
             'pandas'
       ],
       url='https://github.com/csiro-hydroinformatics/bom_water',
