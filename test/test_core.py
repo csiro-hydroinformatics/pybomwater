@@ -1,6 +1,6 @@
 import unittest
 import requests
-import core.bom_water as bm
+import bom_water.bom_water as bm
 
 class test_core(unittest.TestCase):
 
@@ -34,8 +34,9 @@ class test_core(unittest.TestCase):
                     if property == action['@name']:
                         print(value)
                         assert True, f'Test GetCapabilities passed'
+                        continue
 
-            assert False, f'Test GetCapabilities, falied to get action: expected {action}'
+                assert False, f'Test GetCapabilities, falied to get action: expected {action}'
 
     def test_get_feature_of_interest(self):
         '''Get Feature of interest test'''
