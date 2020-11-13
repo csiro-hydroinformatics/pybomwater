@@ -227,3 +227,25 @@ class BomWater():
 
         with open(file) as json_file:
             return json.load(json_file)
+
+    def __create_feature_list(self):
+        import json
+
+        feature_list = []
+        with open('all_GetFeatureOfInterest.json', 'r') as fin:
+            getfeature_json = json.load(fin)
+
+        features = getfeature_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse']['sos:featureMember']
+        for feat in features:
+            long_statioId = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
+            if '#text' in feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']:
+                pos = feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']['#text']
+            else:
+                pos = ''
+            name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
+            stationId = os.path.basename(long_statioId)
+            stat = {'stationID': stationId, 'name': name, 'longName': long_statioId, 'coords': pos}
+            feature_list.append(stat)
+
+        with open('all_bom_features.json', 'w') as fout:
+            json.dump(feature_list, fout)

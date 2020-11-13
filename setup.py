@@ -34,6 +34,8 @@ setuptools.setup(
     name='bomwater', # package names need not start with 'py'
     version=verstr,
     description='A tool for requesting data from BoM Water Data service.',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Andrew Freebairn',
     author_email='andrew.freebairn@csiro.au',
     #   packages = setuptools.find_packages(),
