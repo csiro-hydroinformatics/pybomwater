@@ -1,0 +1,52 @@
+{
+    "soap12:Envelope": {
+        "@xmlns:fes": "http://www.opengis.net/fes/2.0",
+        "@xmlns:gml": "http://www.opengis.net/gml/3.2",
+        "@xmlns:om": "http://www.opengis.net/om/2.0",
+        "@xmlns:sams": "http://www.opengis.net/samplingSpatial/2.0",
+        "@xmlns:sf": "http://www.opengis.net/sampling/2.0",
+        "@xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope",
+        "@xmlns:sos": "http://www.opengis.net/sos/2.0",
+        "@xmlns:swe": "http://www.opengis.net/swe/2.0",
+        "@xmlns:swes": "http://www.opengis.net/swes/2.0",
+        "@xmlns:wml2": "http://www.opengis.net/waterml/2.0",
+        "@xmlns:wsa": "http://www.w3.org/2005/08/addressing",
+        "@xmlns:xlink": "http://www.w3.org/1999/xlink",
+        "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+        "@xsi:schemaLocation": "http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope/soap-envelope.xsd http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sos.xsd http://www.opengis.net/samplingSpatial/2.0 http://schemas.opengis.net/samplingSpatial/2.0/spatialSamplingFeature.xsd http://www.opengis.net/waterml/2.0 http://schemas.opengis.net/waterml/2.0/waterml2.xsd",
+        "soap12:Body": {
+            "sos:GetFeatureOfInterestResponse": {
+                "sos:featureMember": {
+                    "wml2:MonitoringPoint": {
+                        "@gml:id": "Ki.FM.0",
+                        "gml:identifier": {
+                            "#text": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@codeSpace": "http://www.opengis.net/def/nil/OGC/0/unknown"
+                        },
+                        "gml:name": "Cowra-Back Ck Nth P2",
+                        "sams:shape": {
+                            "gml:Point": {
+                                "@gml:id": "Ki.P.0",
+                                "gml:pos": {
+                                    "#text": "-33.7927 148.5919",
+                                    "@srsName": "http://www.opengis.net/def/crs/EPSG/0/4326"
+                                }
+                            }
+                        },
+                        "sf:sampledFeature": {
+                            "@xsi:nil": "true"
+                        },
+                        "sf:type": {
+                            "@xlink:href": "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"
+                        }
+                    }
+                }
+            }
+        },
+        "soap12:Header": {
+            "wsa:Action": "http://www.opengis.net/def/serviceOperation/sos/foiRetrieval/2.0/GetFeatureOfInterestResponse",
+            "wsa:RelatesTo": "0",
+            "wsa:To": "http://www.w3.org/2005/08/addressing/anonymous"
+        }
+    }
+}

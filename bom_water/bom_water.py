@@ -79,15 +79,14 @@ class BomWater():
 
         '''Features'''
         getfeature_json = ''
-        # with open('..\cache\waterML_all_foi.json') as json_file:
-        #     getfeature_json = json.load(json_file)
-        # features = getfeature_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse'][
-        #     'sos:featureMember']
-        # for feat in features:
-        #     long_statioId = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
-        #     name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
-        #     #             stationId = os.path.basename(long_statioId)
-        #     self.features.set_value(name, long_statioId)
+        with open('..\cache\stations.json') as json_file:
+            getfeature_json = json.load(json_file)
+        # features = getfeature_json['longName']
+        for feat in getfeature_json:
+            long_statioId = feat['longName']
+            name = feat['name']
+            # stationId = getfeature_json['stationID']stationID
+            self.features.set_value(name, long_statioId)
 
     def xml(self):
         ''' XML payload builder'''
@@ -247,5 +246,5 @@ class BomWater():
             stat = {'stationID': stationId, 'name': name, 'longName': long_statioId, 'coords': pos}
             feature_list.append(stat)
 
-        with open('all_bom_features.json', 'w') as fout:
+        with open('stations.json', 'w') as fout:
             json.dump(feature_list, fout)

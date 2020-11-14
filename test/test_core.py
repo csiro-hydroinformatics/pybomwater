@@ -1,6 +1,7 @@
 import unittest
 import requests
 import bom_water.bom_water as bm
+import os
 
 class test_core(unittest.TestCase):
 
@@ -47,13 +48,11 @@ class test_core(unittest.TestCase):
         test_json = _bm.xml_to_json(response.text, f'test_GetFeatureOfInterest.json')
         features = test_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse'][
             'sos:featureMember']
-        for feat in features:
-            long_statioId = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
-            name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
-            if name == 'GW036501.2.2':
-                assert True, "Test GetFeatureOfInterest passed"
-            else:
-                assert False, "Test GetFeatureOfInterest falied"
+        long_statioId = features['wml2:MonitoringPoint']['gml:identifier']['#text']
+        if os.path.basename(long_statioId) == 'GW036501.2.2':
+            assert True, "Test GetFeatureOfInterest passed"
+        else:
+            assert False, "Test GetFeatureOfInterest falied"
 
     def test_get_data_availability(self):
         '''Get Data availability test'''
