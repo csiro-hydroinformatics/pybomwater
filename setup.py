@@ -53,4 +53,5 @@ setuptools.setup(
     zip_safe=False)
 
 # https://packaging.python.org/tutorials/packaging-projects/
-#python3 setup.py sdist bdist_wheel
+#python setup.py sdist bdist_wheel
+#twine upload --repository testpypi dist/*

@@ -49,6 +49,9 @@ class Procedure(Builder_Property):
 class BomWater():
 
     def __init__(self):
+        current_dir = os.getcwd()
+        os.chdir('../bom_water')
+        print(current_dir)
         self.actions = Action()
         self.features = Feature()
         self.properties = Property()
@@ -57,7 +60,7 @@ class BomWater():
 
     def init_properties(self):
         getCap_json = ''
-        with open('..\cache\waterML_GetCapabilities.json') as json_file:
+        with open('.\cache\waterML_GetCapabilities.json') as json_file:
             getCap_json = json.load(json_file)
 
         '''actions'''
@@ -79,7 +82,7 @@ class BomWater():
 
         '''Features'''
         getfeature_json = ''
-        with open('..\cache\stations.json') as json_file:
+        with open('.\cache\stations.json') as json_file:
             getfeature_json = json.load(json_file)
         # features = getfeature_json['longName']
         for feat in getfeature_json:
@@ -219,7 +222,11 @@ class BomWater():
 
         return pd.DataFrame(dd, columns=('Timestamp', 'Value')).set_index('Timestamp')
 
-    def xml_to_json(self, xml_text, file):
+    def xml_to_json(self, xml_text):
+        return dict(xmltodict.parse(xml_text))
+
+
+    def xml_to_json_via_file(self, xml_text, file):
         data_dict = dict(xmltodict.parse(xml_text))
         with open(file, 'w+') as json_file:
             json.dump(data_dict, json_file, indent=4, sort_keys=True)

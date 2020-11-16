@@ -27,7 +27,7 @@ class test_core(unittest.TestCase):
         '''Get Capabilities test'''
         _bm = bm.BomWater()
         response = _bm.request(_bm.actions.GetCapabilities)
-        test_json = _bm.xml_to_json(response.text, f'test_GetCapabilities.json')
+        test_json = _bm.xml_to_json(response.text)#, f'test_GetCapabilities.json')
         actions = test_json['sos:Capabilities']['ows:OperationsMetadata']['ows:Operation']
         for action in actions:
             for property, value in vars(_bm.actions).items():
@@ -45,7 +45,7 @@ class test_core(unittest.TestCase):
         '''Todo: Need a small bounding box with known stations contained'''
         response = _bm.request(_bm.actions.GetFeatureOfInterest,
                                    "http://bom.gov.au/waterdata/services/stations/GW036501.2.2")
-        test_json = _bm.xml_to_json(response.text, f'test_GetFeatureOfInterest.json')
+        test_json = _bm.xml_to_json(response.text)#, f'test_GetFeatureOfInterest.json')
         features = test_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse'][
             'sos:featureMember']
         long_statioId = features['wml2:MonitoringPoint']['gml:identifier']['#text']
