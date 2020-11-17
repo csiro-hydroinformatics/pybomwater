@@ -6,6 +6,7 @@ import xmltodict
 import os
 import pandas as pd
 import xml.etree.ElementTree as ET
+from bom_water.spatial_util import spatail_utilty
 
 
 
@@ -234,24 +235,35 @@ class BomWater():
         with open(file) as json_file:
             return json.load(json_file)
 
-    def __create_feature_list(self):
-        import json
+    def create_feature_list(self, bom_response_foi, path):
+        '''This is used to create a feature list for reuse'''
 
-        feature_list = []
-        with open('all_GetFeatureOfInterest.json', 'r') as fin:
-            getfeature_json = json.load(fin)
-
-        features = getfeature_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse']['sos:featureMember']
+        # feature_list = []
+        # with open('all_GetFeatureOfInterest.json', 'r') as fin:
+        #     getfeature_json = json.load(fin)
+        su = spatail_utilty()
+        features = bom_response_foi['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse']['sos:featureMember']
+        geojson_feature = []
         for feat in features:
-            long_statioId = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
+            long_station_no = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
             if '#text' in feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']:
                 pos = feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']['#text']
             else:
                 pos = ''
-            name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
-            stationId = os.path.basename(long_statioId)
-            stat = {'stationID': stationId, 'name': name, 'longName': long_statioId, 'coords': pos}
-            feature_list.append(stat)
+            if not pos == '':
+                lat = pos.split(' ')[0]
+                long = pos.split(' ')[1]
 
-        with open('stations.json', 'w') as fout:
-            json.dump(feature_list, fout)
+            name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
+            station_no = os.path.basename(long_station_no)
+            stat = {'stationID': station_no, 'name': name, 'longName': long_station_no, 'coords': pos}
+            # feature_list.append(stat)
+            geojson_feature.append(su.create_geojson_feature(lat, long, station_no, None, name, long_station_no))
+        if not path == None:
+            su.write_features(geojson_feature, path)
+
+        return su.get_feature_collection(geojson_feature)
+
+        # with open('stations.json', 'w') as fout:
+        #     json.dump(feature_list, fout)
+

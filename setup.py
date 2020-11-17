@@ -46,7 +46,9 @@ setuptools.setup(
         'pytz',
         'json5',
         'xmltodict',
-        'pandas'
+        'pandas',
+        'geojson',
+        'shapely'
     ],
     classifiers=CLASSIFIERS,
     url='https://github.com/csiro-hydroinformatics/pybomwater',
