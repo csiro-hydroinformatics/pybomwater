@@ -1,6 +1,9 @@
-# BOM Water a tool for requesting data from BoM Sensor Observation Service (SOS2, as WaterML 2.0 format)
+# BoM Water
+A python tool for requesting data from BoM Sensor Observation Service (SOS2, as WaterML 2.0 format)
+
 [![license](http://img.shields.io/badge/license-MIT-blue.svg)]() ![status](https://img.shields.io/badge/status-alpha-blue.svg) master: [![Build status - master]()]() devel: [![Build status - devel]()]()
 
+Bureau of Meteorology (BoM) documentation on using their SOS service is available at the following links:
 * [BoM Water Data service ](http://www.bom.gov.au/waterdata/services)
 * [BoM Notes](http://www.bom.gov.au/metadata/catalogue/19115/ANZCW0503900528)
 * [BoM Guide to Sensor Observation Services (SOS2)](https://github.com/csiro-hydroinformatics/bom_water/blob/main/doc/Guide_to_Sensor_Observation_Services_(SOS2)_for_Water_Data_Online_v1.0.1.pdf)
