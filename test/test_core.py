@@ -2,6 +2,8 @@ import unittest
 import requests
 import bom_water.bom_water as bm
 import os
+import shapely
+from bom_water.spatial_util import spatail_utilty
 
 class test_core(unittest.TestCase):
 
@@ -61,3 +63,10 @@ class test_core(unittest.TestCase):
     def test_get_observation(self):
         '''Get Observation test'''
         _bm = bm.BomWater()
+
+    def test_create_feature_geojson_list(self):
+        _bom = bm.BomWater()
+        response = _bom.request(_bom.actions.GetFeatureOfInterest, None, None, None, None, None, "-37.505032 140.999283", "-28.157021 153.638824"  )
+        response_json = _bom.xml_to_json(response.text)
+        folder = f'C:\\Users\\fre171\\Documents\\pyBOMwater_dummyData\\'
+        _bom.create_feature_list(response_json, folder )
