@@ -4,6 +4,7 @@ import pytz
 import json
 import xmltodict
 import os
+import re
 import pandas as pd
 import xml.etree.ElementTree as ET
 from bom_water.spatial_util import spatail_utilty
@@ -93,6 +94,7 @@ class BomWater():
         offerings = getCap_json['sos:Capabilities']['sos:contents']['sos:Contents']['swes:offering']
         for off in offerings:
             proc = os.path.basename(off['sos:ObservationOffering']['swes:procedure'])
+            proc = re.sub('\W+', '_', proc)
             self.procedures.set_value(proc, proc)
 
         '''Features'''
@@ -100,9 +102,11 @@ class BomWater():
         with open(os.path.join(self._module_dir, 'cache/stations.json')) as json_file:
             getfeature_json = json.load(json_file)
         # features = getfeature_json['longName']
-        for index in range(len(getfeature_json)):
+        for index in range(len(getfeature_json['features'])):
             long_statioId = getfeature_json['features'][index]['properties']['long_name']
+
             name =  getfeature_json['features'][index]['properties']['name']
+            name = re.sub('\W+', '_', name)
             # stationId = getfeature_json['stationID']stationID
             self.features.set_value(name, long_statioId)
 
