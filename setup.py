@@ -49,7 +49,6 @@ setuptools.setup(
         'pandas',
         'geojson',
         'shapely',
-        're'
     ],
     classifiers=CLASSIFIERS,
     url='https://github.com/csiro-hydroinformatics/pybomwater',

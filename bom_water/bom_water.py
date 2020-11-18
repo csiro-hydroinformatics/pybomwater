@@ -57,7 +57,7 @@ class BomWater():
         self.properties = Property()
         self.procedures = Procedure()
 
-        self.check_cache_status()
+        self.check_cache_status()#This should move to user space not be in module space
         self.init_properties()
 
     def check_cache_status(self):
