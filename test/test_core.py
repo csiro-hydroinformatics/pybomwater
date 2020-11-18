@@ -68,5 +68,5 @@ class test_core(unittest.TestCase):
         _bom = bm.BomWater()
         response = _bom.request(_bom.actions.GetFeatureOfInterest, None, None, None, None, None, "-37.505032 140.999283", "-28.157021 153.638824"  )
         response_json = _bom.xml_to_json(response.text)
-        folder = f'C:\\Users\\fre171\\Documents\\pyBOMwater_dummyData\\'
+        folder = f'C:\\Users\\fre171\\Documents\\pyBOMwater_dummyData\\test_stations.json'
         _bom.create_feature_list(response_json, folder )

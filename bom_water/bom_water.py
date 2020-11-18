@@ -50,18 +50,32 @@ class Procedure(Builder_Property):
 class BomWater():
 
     def __init__(self):
-        current_dir = os.getcwd()
-        os.chdir('../bom_water')
-        print(current_dir)
+        self._module_dir = os.path.dirname(__file__)
         self.actions = Action()
         self.features = Feature()
         self.properties = Property()
         self.procedures = Procedure()
+
+        self.check_cache_status()
         self.init_properties()
+
+    def check_cache_status(self):
+        if os.path.exists(os.path.join(self._module_dir, 'cache/waterML_GetCapabilities.json')):
+            return
+        else:
+            print(f'one time creating cache directory and files, this will take a little time please wait.')
+            os.mkdir(os.path.join(self._module_dir, 'cache'))
+            response = self.request(self.actions.GetCapabilities)
+            self.xml_to_json_via_file(response.text, os.path.join(self._module_dir,'cache/waterML_GetCapabilities.json'))
+            response = self.request(self.actions.GetFeatureOfInterest)
+            file = os.path.join(self._module_dir, 'cache/stations.json')
+            self.create_feature_list(self.xml_to_json(response.text), file)
+            # self.xml_to_json_via_file(response.text, os.path.join(self._module_dir, 'cache/stations.json'))
+            print(f'finished creating cache directory and files')
 
     def init_properties(self):
         getCap_json = ''
-        with open('.\cache\waterML_GetCapabilities.json') as json_file:
+        with open(os.path.join(self._module_dir, 'cache/waterML_GetCapabilities.json')) as json_file:
             getCap_json = json.load(json_file)
 
         '''actions'''
@@ -83,12 +97,12 @@ class BomWater():
 
         '''Features'''
         getfeature_json = ''
-        with open('.\cache\stations.json') as json_file:
+        with open(os.path.join(self._module_dir, 'cache/stations.json')) as json_file:
             getfeature_json = json.load(json_file)
         # features = getfeature_json['longName']
-        for feat in getfeature_json:
-            long_statioId = feat['longName']
-            name = feat['name']
+        for index in range(len(getfeature_json)):
+            long_statioId = getfeature_json['features'][index]['properties']['long_name']
+            name =  getfeature_json['features'][index]['properties']['name']
             # stationId = getfeature_json['stationID']stationID
             self.features.set_value(name, long_statioId)
 

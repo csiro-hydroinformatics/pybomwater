@@ -32,5 +32,5 @@ class spatail_utilty():
 
     def write_features(self, features, path):
         collection = FeatureCollection(features)
-        with open(f'{path}_geofeature.json', "w") as f:
+        with open(path, "w") as f:
             f.write('%s' % collection)
