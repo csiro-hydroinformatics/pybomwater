@@ -7,6 +7,7 @@ dependencies:
   - requests
   - iso8601
   - pytz
+  - appdirs
   - pip
   - pip:
     - json

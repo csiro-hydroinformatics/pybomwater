@@ -6,8 +6,24 @@ import xmltodict
 import os
 import pandas as pd
 import xml.etree.ElementTree as ET
+import appdirs as ad
 
+_APPNAME = "pybomwater"
+_APPAUTHOR = "csiro"
+_U_DATA_DIR = ad.user_data_dir(_APPNAME, _APPAUTHOR)
+_U_CACHE_DIR = ad.user_cache_dir(_APPNAME, _APPAUTHOR)
+if not os.path.exists(_U_CACHE_DIR):
+    os.makedirs(_U_CACHE_DIR, mode = 0o700, exist_ok = True)
 
+_U_CACHE_GET_CAP = os.path.join(_U_CACHE_DIR, 'waterML_GetCapabilities.json') 
+
+def xml_to_json(self, xml_text, file):
+    data_dict = dict(xmltodict.parse(xml_text))
+    with open(file, 'w+') as json_file:
+        json.dump(data_dict, json_file, indent=4, sort_keys=True)
+
+    with open(file) as json_file:
+        return json.load(json_file)
 
 class Builder_Property():
     def __init__(self):
@@ -23,7 +39,10 @@ class Action:
 
     # GetDescribeSensor = 'http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=DescribeSensor'
     GetCapabilities = 'http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=GetCapabilities'
-    GetDataAvailability = "http://www.opengis.net/def/serviceOperation/sos/daRetrieval/2.0/GetDataAvailability"
+    # GetDataAvailability = "http://www.opengis.net/def/serviceOperation/sos/daRetrieval/2.0/GetDataAvailability"
+    # GetObservation = "http://www.opengis.net/def/serviceOperation/sos/core/2.0/GetObservation"
+    # GetFeatureOfInterest = "http://www.opengis.net/def/serviceOperation/sos/foiRetrieval/2.0/GetFeatureOfInterest"
+    GetDataAvailability = "http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=GetDataAvailability"
     GetObservation = "http://www.opengis.net/def/serviceOperation/sos/core/2.0/GetObservation"
     GetFeatureOfInterest = "http://www.opengis.net/def/serviceOperation/sos/foiRetrieval/2.0/GetFeatureOfInterest"
 
@@ -56,9 +75,7 @@ class BomWater():
         self.init_properties()
 
     def init_properties(self):
-        getCap_json = ''
-        with open('..\cache\waterML_GetCapabilities.json') as json_file:
-            getCap_json = json.load(json_file)
+        getCap_json = _get_capabilities_json()
 
         '''actions'''
         #         operations = getCap_json['sos:Capabilities']['ows:OperationsMetadata']['ows:Operation']
@@ -186,11 +203,12 @@ class BomWater():
 
     def request(self, action, feature=None, prop=None, proced=None, begin=None, end=None, lower_corner=None,
                 upper_corner=None):
-        endpoint = f"http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
-        payload = self.build_payload(action, feature, prop, proced, begin, end, lower_corner, upper_corner)
         if action == Action.GetCapabilities:
             return requests.get(action)
-        return requests.post(endpoint, payload)
+        else:
+            endpoint = f"http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
+            payload = self.build_payload(action, feature, prop, proced, begin, end, lower_corner, upper_corner)
+            return requests.post(endpoint, payload)
 
     def _parse_float(self, x):
         if x is None:
@@ -220,14 +238,6 @@ class BomWater():
 
         return pd.DataFrame(dd, columns=('Timestamp', 'Value')).set_index('Timestamp')
 
-    def xml_to_json(self, xml_text, file):
-        data_dict = dict(xmltodict.parse(xml_text))
-        with open(file, 'w+') as json_file:
-            json.dump(data_dict, json_file, indent=4, sort_keys=True)
-
-        with open(file) as json_file:
-            return json.load(json_file)
-
     def __create_feature_list(self):
         import json
 
@@ -249,3 +259,16 @@ class BomWater():
 
         with open('all_bom_features.json', 'w') as fout:
             json.dump(feature_list, fout)
+
+
+def _get_cached_json(url:str, cached_filename:str) -> str:
+    if not os.path.exists(cached_filename):
+        r = requests.get(url, allow_redirects=True)
+        open(cached_filename, 'wb').write(r.content)
+    with open(cached_filename) as json_file:
+        content = json.load(json_file)
+    return content
+
+def _get_capabilities_json() -> str:
+    return _get_cached_json(Action.GetCapabilities, _U_CACHE_GET_CAP)
+

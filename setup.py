@@ -46,6 +46,7 @@ setuptools.setup(
         'pytz',
         'json5',
         'xmltodict',
+        'appdirs',
         'pandas'
     ],
     classifiers=CLASSIFIERS,
