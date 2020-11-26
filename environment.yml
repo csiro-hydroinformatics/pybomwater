@@ -7,8 +7,8 @@ dependencies:
   - requests
   - iso8601
   - pytz
+  - json5
+  - xmltodict
+  - pandas
   - geojson
   - shapely
-  - pip
-  - pip:
-    - json
