@@ -20,6 +20,13 @@ From source:
 ## Usage
 see [Jupyter Notebook example](https://github.com/csiro-hydroinformatics/bomwater-notebook)
 
+---
+**NOTE**
+
+The first time a BomWater object is instantiated (bm = bom_water.BomWater()) a cache of data is created.  This process obtains data from the BoM service and will take a little while to complete.  Once cached this process is not repeated and performance will return to normal.
+
+---
+
 ## Documentation
 Bureau of Meteorology (BoM) documentation on using their SOS service is available at the following links:
 * [BoM Water Data service ](http://www.bom.gov.au/waterdata/services)
