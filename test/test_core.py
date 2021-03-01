@@ -2,10 +2,27 @@ import unittest
 import requests
 import bom_water.bom_water as bm
 import os
+from pathlib import Path
 import shapely
 from bom_water.spatial_util import spatail_utilty
 
 class test_core(unittest.TestCase):
+
+    # def __init__(self):
+    #     super(test_core, self).__init__(self)
+    #     self.setUp()
+
+    @classmethod
+    def setUpClass(self):
+        remove_file = os.path.join(Path.home(), '/bom_water/cache/waterML_GetCapabilities.json')
+        if os.path.exists(remove_file):
+            os.remove(remove_file)
+
+    # def test_user_path(self):
+    #     from pathlib import Path
+    #     print(Path.home())
+
+
 
     def test_bom_service(self):
         '''Test that the service is up

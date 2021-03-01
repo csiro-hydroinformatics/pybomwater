@@ -4,6 +4,7 @@ import pytz
 import json
 import xmltodict
 import os
+from pathlib import Path
 import re
 import pandas as pd
 import xml.etree.ElementTree as ET
@@ -51,32 +52,37 @@ class Procedure(Builder_Property):
 class BomWater():
 
     def __init__(self):
-        self._module_dir = os.path.dirname(__file__)
+        # self._module_dir = os.path.dirname(__file__)
         self.actions = Action()
         self.features = Feature()
         self.properties = Property()
         self.procedures = Procedure()
 
+        self.cache = os.path.join(str(os.path.expanduser("~")), 'bom_water', 'cache')
+        self.waterML_GetCapabilities = os.path.join(self.cache, 'waterML_GetCapabilities.json')
+        self.stations = os.path.join(self.cache, 'stations.json')
         self.check_cache_status()#This should move to user space not be in module space
         self.init_properties()
 
     def check_cache_status(self):
-        if os.path.exists(os.path.join(self._module_dir, 'cache/waterML_GetCapabilities.json')):
+        if os.path.exists(self.waterML_GetCapabilities):
             return
         else:
             print(f'one time creating cache directory and files, this will take a little time please wait.')
-            os.mkdir(os.path.join(self._module_dir, 'cache'))
+            if not os.path.exists(self.cache):
+                os.makedirs(self.cache)
+
             response = self.request(self.actions.GetCapabilities)
-            self.xml_to_json_via_file(response.text, os.path.join(self._module_dir,'cache/waterML_GetCapabilities.json'))
+            self.xml_to_json_via_file(response.text, self.waterML_GetCapabilities)
             response = self.request(self.actions.GetFeatureOfInterest)
-            file = os.path.join(self._module_dir, 'cache/stations.json')
-            self.create_feature_list(self.xml_to_json(response.text), file)
+
+            self.create_feature_list(self.xml_to_json(response.text), self.stations)
             # self.xml_to_json_via_file(response.text, os.path.join(self._module_dir, 'cache/stations.json'))
             print(f'finished creating cache directory and files')
 
     def init_properties(self):
         getCap_json = ''
-        with open(os.path.join(self._module_dir, 'cache/waterML_GetCapabilities.json')) as json_file:
+        with open(self.waterML_GetCapabilities) as json_file:
             getCap_json = json.load(json_file)
 
         '''actions'''
@@ -99,7 +105,7 @@ class BomWater():
 
         '''Features'''
         getfeature_json = ''
-        with open(os.path.join(self._module_dir, 'cache/stations.json')) as json_file:
+        with open(self.stations) as json_file:
             getfeature_json = json.load(json_file)
         # features = getfeature_json['longName']
         for index in range(len(getfeature_json['features'])):
@@ -262,11 +268,16 @@ class BomWater():
         su = spatail_utilty()
         features = bom_response_foi['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse']['sos:featureMember']
         geojson_feature = []
+        lat = ''
+        long = ''
+        pos = ''
         for feat in features:
             long_station_no = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
             if '#text' in feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']:
                 pos = feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']['#text']
             else:
+                lat = ''
+                long = ''
                 pos = ''
             if not pos == '':
                 lat = pos.split(' ')[0]
