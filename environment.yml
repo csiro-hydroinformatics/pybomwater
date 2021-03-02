@@ -13,3 +13,5 @@ dependencies:
   - geojson
   - shapely
   - pytest
+  - codecov
+  - pytest-cov

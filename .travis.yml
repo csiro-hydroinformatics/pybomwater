@@ -18,4 +18,8 @@
   - source $HOME/miniconda/bin/activate bom_water_env
 
   script:
-    - python -m unittest ./test/test_core.py
+    - coverage run -m pytest
+    # python -m unittest ./test/test_core.py
+
+  after_success:
+  - codecov
