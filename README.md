@@ -1,7 +1,10 @@
 # BoM Water
 A python tool for requesting data from BoM Sensor Observation Service (SOS2, as WaterML 2.0 format)
 
-[![license](http://img.shields.io/badge/license-MIT-blue.svg)]() ![status](https://img.shields.io/badge/status-alpha-blue.svg) [![Build status - master](https://travis-ci.org/csiro-hydroinformatics/pybomwater.svg?branch=main)]()  ![pypi](https://img.shields.io/pypi/v/bomwater.svg?logo=python&logoColor=white)
+[![license](http://img.shields.io/badge/license-MIT-blue.svg)]() ![status](https://img.shields.io/badge/status-alpha-blue.svg) [![Build status - master](https://travis-ci.org/csiro-hydroinformatics/pybomwater.svg?branch=main)]()  ![pypi](https://img.shields.io/pypi/v/bomwater.svg?logo=python&logoColor=white) 
+
+[![codecov-master](https://codecov.io/gh/csiro-hydrogeology/pyela/branch/master/graph/badge.svg)](https://codecov.io/gh/csiro-hydroinformatics/pybomwater/branch/main)
+
 
 This package has been developed to access to the BoM Water Data Sensor Observation Service (SOS). With a goal to easily and efficiently integrate data into scientific workflows  
 
