@@ -87,3 +87,6 @@ class test_core(unittest.TestCase):
         response_json = _bom.xml_to_json(response.text)
         folder = f'C:\\Users\\fre171\\Documents\\pyBOMwater_dummyData\\test_stations.json'
         _bom.create_feature_list(response_json, folder )
+
+if __name__ == '__main__':
+    unittest.main()
