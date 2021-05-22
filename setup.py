@@ -47,11 +47,14 @@ setuptools.setup(
         'json5',
         'xmltodict',
         'appdirs',
-        'pandas'
+        'pandas',
+        'geojson',
+        'shapely',
     ],
     classifiers=CLASSIFIERS,
     url='https://github.com/csiro-hydroinformatics/pybomwater',
     zip_safe=False)
 
 # https://packaging.python.org/tutorials/packaging-projects/
-#python3 setup.py sdist bdist_wheel
+#python setup.py sdist bdist_wheel
+#twine upload --repository testpypi dist/*

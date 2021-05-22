@@ -1,6 +1,9 @@
 import unittest
 import requests
 import bom_water.bom_water as bm
+import os
+import shapely
+from bom_water.spatial_util import spatail_utilty
 
 class test_core(unittest.TestCase):
 
@@ -26,7 +29,7 @@ class test_core(unittest.TestCase):
         '''Get Capabilities test'''
         _bm = bm.BomWater()
         response = _bm.request(_bm.actions.GetCapabilities)
-        test_json = _bm.xml_to_json(response.text, f'test_GetCapabilities.json')
+        test_json = _bm.xml_to_json(response.text)#, f'test_GetCapabilities.json')
         actions = test_json['sos:Capabilities']['ows:OperationsMetadata']['ows:Operation']
         for action in actions:
             for property, value in vars(_bm.actions).items():
@@ -44,16 +47,14 @@ class test_core(unittest.TestCase):
         '''Todo: Need a small bounding box with known stations contained'''
         response = _bm.request(_bm.actions.GetFeatureOfInterest,
                                    "http://bom.gov.au/waterdata/services/stations/GW036501.2.2")
-        test_json = _bm.xml_to_json(response.text, f'test_GetFeatureOfInterest.json')
+        test_json = _bm.xml_to_json(response.text)#, f'test_GetFeatureOfInterest.json')
         features = test_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse'][
             'sos:featureMember']
-        for feat in features:
-            long_statioId = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
-            name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
-            if name == 'GW036501.2.2':
-                assert True, "Test GetFeatureOfInterest passed"
-            else:
-                assert False, "Test GetFeatureOfInterest falied"
+        long_statioId = features['wml2:MonitoringPoint']['gml:identifier']['#text']
+        if os.path.basename(long_statioId) == 'GW036501.2.2':
+            assert True, "Test GetFeatureOfInterest passed"
+        else:
+            assert False, "Test GetFeatureOfInterest falied"
 
     def test_get_data_availability(self):
         '''Get Data availability test'''
@@ -62,3 +63,10 @@ class test_core(unittest.TestCase):
     def test_get_observation(self):
         '''Get Observation test'''
         _bm = bm.BomWater()
+
+    def test_create_feature_geojson_list(self):
+        _bom = bm.BomWater()
+        response = _bom.request(_bom.actions.GetFeatureOfInterest, None, None, None, None, None, "-37.505032 140.999283", "-28.157021 153.638824"  )
+        response_json = _bom.xml_to_json(response.text)
+        folder = f'C:\\Users\\fre171\\Documents\\pyBOMwater_dummyData\\test_stations.json'
+        _bom.create_feature_list(response_json, folder )

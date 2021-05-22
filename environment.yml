@@ -8,6 +8,8 @@ dependencies:
   - iso8601
   - pytz
   - appdirs
+  - geojson
+  - shapely
   - pip
   - pip:
     - json

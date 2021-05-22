@@ -1,0 +1,442 @@
+{
+    "soap12:Envelope": {
+        "@xmlns:gda": "http://www.opengis.net/sosgda/1.0",
+        "@xmlns:gml": "http://www.opengis.net/gml/3.2",
+        "@xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope",
+        "@xmlns:wsa": "http://www.w3.org/2005/08/addressing",
+        "@xmlns:xlink": "http://www.w3.org/1999/xlink",
+        "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+        "@xsi:schemaLocation": "http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope/soap-envelope.xsd http://www.opengis.net/sosgda/1.0 http://waterml2.org/schemas/gda/1.0/gda.xsd",
+        "soap12:Body": {
+            "gda:GetDataAvailabilityResponse": {
+                "gda:dataAvailabilityMember": [
+                    {
+                        "@gml:id": "Ki.DAM.0",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.0",
+                                "gml:beginPosition": "2015-05-14T10:59:59.000+10:00",
+                                "gml:endPosition": "2020-11-08T21:00:01.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_P_1",
+                            "@xlink:title": "Harmonised.Provisional.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.1",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.1",
+                                "gml:beginPosition": "2005-11-10T00:00:00.000+10:00",
+                                "gml:endPosition": "2020-11-08T00:00:00.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_C_B_1_DailyMin",
+                            "@xlink:title": "DMQaQc.Merged.DailyMin.24HR"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.2",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.2",
+                                "gml:beginPosition": "2005-11-10T00:00:00.000+10:00",
+                                "gml:endPosition": "2020-11-08T00:00:00.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_C_B_1_DailyMean",
+                            "@xlink:title": "DMQaQc.Merged.DailyMean.24HR"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.3",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.3",
+                                "gml:beginPosition": "2005-11-01T00:00:00.000+10:00",
+                                "gml:endPosition": "2020-10-01T00:00:00.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_C_B_1_MonthlyMean",
+                            "@xlink:title": "DMQaQc.Merged.MonthlyMean.CalMonth"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.4",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "@nilReason": "missing"
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/R_PB_1ST",
+                            "@xlink:title": "Received.Provisionalbest.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.5",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.5",
+                                "gml:beginPosition": "2015-05-14T10:59:59.000+10:00",
+                                "gml:endPosition": "2020-11-08T21:00:01.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/R_P_1ST",
+                            "@xlink:title": "Received.Provisional.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.6",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.6",
+                                "gml:beginPosition": "2005-11-10T14:30:00.000+10:00",
+                                "gml:endPosition": "2020-11-08T21:00:01.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_C_Std_QaQc_1",
+                            "@xlink:title": "DMQaQc.Auto.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.7",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.7",
+                                "gml:beginPosition": "2005-11-10T14:30:00.000+10:00",
+                                "gml:endPosition": "2020-07-23T14:00:01.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_V_Std_1",
+                            "@xlink:title": "Standard.Validated.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.8",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.8",
+                                "gml:beginPosition": "2005-11-10T14:30:00.000+10:00",
+                                "gml:endPosition": "2020-11-08T21:00:01.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_C_Std_1",
+                            "@xlink:title": "ObsPOR.Merged.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.9",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "@nilReason": "missing"
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_C_Std_Qcf_1",
+                            "@xlink:title": "DMmanQC.Manual.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.10",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.10",
+                                "gml:beginPosition": "2005-11-10T14:30:00.000+10:00",
+                                "gml:endPosition": "2020-11-08T21:00:01.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_C_B_1",
+                            "@xlink:title": "DMQaQc.Merged.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.11",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.11",
+                                "gml:beginPosition": "2005-11-10T14:30:00.000+10:00",
+                                "gml:endPosition": "2020-07-23T14:00:01.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/R_V_1ST",
+                            "@xlink:title": "Received.Validated.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.12",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.12",
+                                "gml:beginPosition": "2005-11-10T14:30:00.000+10:00",
+                                "gml:endPosition": "2020-07-23T14:00:01.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_V_1",
+                            "@xlink:title": "Harmonised.Validated.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.13",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.13",
+                                "gml:beginPosition": "2015-05-14T10:59:59.000+10:00",
+                                "gml:endPosition": "2020-11-08T21:00:01.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_P_Std_1",
+                            "@xlink:title": "Standard.Provisional.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.14",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.14",
+                                "gml:beginPosition": "2005-01-01T00:00:00.000+10:00",
+                                "gml:endPosition": "2020-01-01T00:00:00.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_C_B_1_YearlyMean",
+                            "@xlink:title": "DMQaQc.Merged.YearlyMean.CalYear"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.15",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.15",
+                                "gml:beginPosition": "2005-11-10T00:00:00.000+10:00",
+                                "gml:endPosition": "2020-11-08T00:00:00.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_C_B_1_DailyMax",
+                            "@xlink:title": "DMQaQc.Merged.DailyMax.24HR"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.16",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "@nilReason": "missing"
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/R_PC_1ST",
+                            "@xlink:title": "Received.Combined.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.17",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "@nilReason": "missing"
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_PB_1",
+                            "@xlink:title": "Harmonised.Provisionalbest.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.18",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "@nilReason": "missing"
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_PC_1",
+                            "@xlink:title": "Harmonised.Combined.AsStored.1"
+                        }
+                    },
+                    {
+                        "@gml:id": "Ki.DAM.19",
+                        "gda:featureOfInterest": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/stations/GW036501.2.2",
+                            "@xlink:title": "Cowra-Back Ck Nth P2"
+                        },
+                        "gda:observedProperty": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/parameters/Ground Water Level",
+                            "@xlink:title": "Ground Water Level"
+                        },
+                        "gda:phenomenonTime": {
+                            "gml:TimePeriod": {
+                                "@gml:id": "Ki.TP.19",
+                                "gml:beginPosition": "2015-05-14T10:59:59.000+10:00",
+                                "gml:endPosition": "2020-11-08T21:00:01.000+10:00"
+                            }
+                        },
+                        "gda:procedure": {
+                            "@xlink:href": "http://bom.gov.au/waterdata/services/tstypes/Pat9_P_C_1",
+                            "@xlink:title": "CombinedProv.Merged.AsStored.1"
+                        }
+                    }
+                ]
+            }
+        },
+        "soap12:Header": {
+            "wsa:Action": "http://www.opengis.net/def/serviceOperation/sos/daRetrieval/2.0/GetDataAvailabilityResponse",
+            "wsa:RelatesTo": "0",
+            "wsa:To": "http://www.w3.org/2005/08/addressing/anonymous"
+        }
+    }
+}

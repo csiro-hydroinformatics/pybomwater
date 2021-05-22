@@ -4,9 +4,11 @@ import pytz
 import json
 import xmltodict
 import os
+import re
 import pandas as pd
 import xml.etree.ElementTree as ET
 import appdirs as ad
+from bom_water.spatial_util import spatail_utilty
 
 _APPNAME = "pybomwater"
 _APPAUTHOR = "csiro"
@@ -68,14 +70,33 @@ class Procedure(Builder_Property):
 class BomWater():
 
     def __init__(self):
+        self._module_dir = os.path.dirname(__file__)
         self.actions = Action()
         self.features = Feature()
         self.properties = Property()
         self.procedures = Procedure()
+
+        self.check_cache_status()#This should move to user space not be in module space
         self.init_properties()
 
+    def check_cache_status(self):
+        if os.path.exists(os.path.join(self._module_dir, 'cache/waterML_GetCapabilities.json')):
+            return
+        else:
+            print(f'one time creating cache directory and files, this will take a little time please wait.')
+            os.mkdir(os.path.join(self._module_dir, 'cache'))
+            response = self.request(self.actions.GetCapabilities)
+            self.xml_to_json_via_file(response.text, os.path.join(self._module_dir,'cache/waterML_GetCapabilities.json'))
+            response = self.request(self.actions.GetFeatureOfInterest)
+            file = os.path.join(self._module_dir, 'cache/stations.json')
+            self.create_feature_list(self.xml_to_json(response.text), file)
+            # self.xml_to_json_via_file(response.text, os.path.join(self._module_dir, 'cache/stations.json'))
+            print(f'finished creating cache directory and files')
+
     def init_properties(self):
-        getCap_json = _get_capabilities_json()
+        getCap_json = ''
+        with open(os.path.join(self._module_dir, 'cache/waterML_GetCapabilities.json')) as json_file:
+            getCap_json = json.load(json_file)
 
         '''actions'''
         #         operations = getCap_json['sos:Capabilities']['ows:OperationsMetadata']['ows:Operation']
@@ -92,19 +113,21 @@ class BomWater():
         offerings = getCap_json['sos:Capabilities']['sos:contents']['sos:Contents']['swes:offering']
         for off in offerings:
             proc = os.path.basename(off['sos:ObservationOffering']['swes:procedure'])
+            proc = re.sub('\W+', '_', proc)
             self.procedures.set_value(proc, proc)
 
         '''Features'''
         getfeature_json = ''
-        # with open('..\cache\waterML_all_foi.json') as json_file:
-        #     getfeature_json = json.load(json_file)
-        # features = getfeature_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse'][
-        #     'sos:featureMember']
-        # for feat in features:
-        #     long_statioId = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
-        #     name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
-        #     #             stationId = os.path.basename(long_statioId)
-        #     self.features.set_value(name, long_statioId)
+        with open(os.path.join(self._module_dir, 'cache/stations.json')) as json_file:
+            getfeature_json = json.load(json_file)
+        # features = getfeature_json['longName']
+        for index in range(len(getfeature_json['features'])):
+            long_statioId = getfeature_json['features'][index]['properties']['long_name']
+
+            name =  getfeature_json['features'][index]['properties']['name']
+            name = re.sub('\W+', '_', name)
+            # stationId = getfeature_json['stationID']stationID
+            self.features.set_value(name, long_statioId)
 
     def xml(self):
         ''' XML payload builder'''
@@ -238,37 +261,47 @@ class BomWater():
 
         return pd.DataFrame(dd, columns=('Timestamp', 'Value')).set_index('Timestamp')
 
-    def __create_feature_list(self):
-        import json
+    def xml_to_json(self, xml_text):
+        return dict(xmltodict.parse(xml_text))
 
-        feature_list = []
-        with open('all_GetFeatureOfInterest.json', 'r') as fin:
-            getfeature_json = json.load(fin)
 
-        features = getfeature_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse']['sos:featureMember']
+    def xml_to_json_via_file(self, xml_text, file):
+        data_dict = dict(xmltodict.parse(xml_text))
+        with open(file, 'w+') as json_file:
+            json.dump(data_dict, json_file, indent=4, sort_keys=True)
+
+        with open(file) as json_file:
+            return json.load(json_file)
+
+    def create_feature_list(self, bom_response_foi, path):
+        '''This is used to create a feature list for reuse'''
+
+        # feature_list = []
+        # with open('all_GetFeatureOfInterest.json', 'r') as fin:
+        #     getfeature_json = json.load(fin)
+        su = spatail_utilty()
+        features = bom_response_foi['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse']['sos:featureMember']
+        geojson_feature = []
         for feat in features:
-            long_statioId = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
+            long_station_no = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
             if '#text' in feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']:
                 pos = feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']['#text']
             else:
                 pos = ''
+            if not pos == '':
+                lat = pos.split(' ')[0]
+                long = pos.split(' ')[1]
+
             name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
-            stationId = os.path.basename(long_statioId)
-            stat = {'stationID': stationId, 'name': name, 'longName': long_statioId, 'coords': pos}
-            feature_list.append(stat)
+            station_no = os.path.basename(long_station_no)
+            stat = {'stationID': station_no, 'name': name, 'longName': long_station_no, 'coords': pos}
+            # feature_list.append(stat)
+            geojson_feature.append(su.create_geojson_feature(lat, long, station_no, None, name, long_station_no))
+        if not path == None:
+            su.write_features(geojson_feature, path)
 
-        with open('all_bom_features.json', 'w') as fout:
-            json.dump(feature_list, fout)
+        return su.get_feature_collection(geojson_feature)
 
-
-def _get_cached_json(url:str, cached_filename:str) -> str:
-    if not os.path.exists(cached_filename):
-        r = requests.get(url, allow_redirects=True)
-        open(cached_filename, 'wb').write(r.content)
-    with open(cached_filename) as json_file:
-        content = json.load(json_file)
-    return content
-
-def _get_capabilities_json() -> str:
-    return _get_cached_json(Action.GetCapabilities, _U_CACHE_GET_CAP)
+        # with open('stations.json', 'w') as fout:
+        #     json.dump(feature_list, fout)
 
