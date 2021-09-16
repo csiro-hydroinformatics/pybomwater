@@ -85,6 +85,9 @@ class test_core(unittest.TestCase):
 
         _bm = bm.BomWater()
         ts = _bm.parse_get_data(response)
+
+        assert ts.shape[1] == 3
+
         qual = ts.Quality.value_counts()
         assert qual[-1] == 1075
         assert qual[10] == 295

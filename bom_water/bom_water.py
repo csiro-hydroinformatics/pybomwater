@@ -231,6 +231,28 @@ class BomWater():
         t = iso8601.parse_date(x).astimezone(pytz.utc)
         return t.replace(tzinfo=None)
 
+    def _parse_quality_code(self, node):
+        qcodes = [-1, ""]
+        if len(node) == 0:
+            return qcodes
+
+        if len(node[0]) == 0:
+            return qcodes
+
+        for nd in node[0]:
+            for key, field in nd.items():
+                value = re.sub(".*/", "", field)
+                if re.search("interpolation", field):
+                    # Found interpolation field
+                    qcodes[1] = value
+                    break
+                elif re.search("qualifier", field):
+                    # Found qualifier field
+                    qcodes[0] = int(value)
+                    break
+
+        return qcodes
+
 
     def parse_get_data(self, response, raw=False):
 
@@ -238,26 +260,26 @@ class BomWater():
 
         query_measurement = './/{http://www.opengis.net/waterml/2.0}'+\
                     'MeasurementTVP'
-        key_quality_code = '{http://www.w3.org/1999/xlink}title'
 
         data = []
         for e in root.findall(query_measurement):
-            info = [None, float('nan'), -1]
+            info = [None, float('nan'), -1, ""]
             for node in e:
                 if node.tag.endswith("time"):
                     info[0] = self._parse_time(node.text)
                 elif node.tag.endswith("value"):
                     info[1] = self._parse_float(node.text)
                 elif node.tag.endswith("metadata"):
-                    info[2] = int(node[0][0].attrib[key_quality_code])
-
+                    qcodes = self._parse_quality_code(node)
+                    info[2] = qcodes[0]
+                    info[3] = qcodes[1]
             data.append(info)
 
         if raw:
             return data
 
         df = pd.DataFrame(data, \
-                columns=('Timestamp', 'Value', 'Quality'))
+             columns=('Timestamp', 'Value', 'Quality', 'Interpolation'))
         df = df.set_index('Timestamp')
 
         return df
