@@ -1,4 +1,5 @@
 import unittest
+import types
 import requests
 import bom_water.bom_water as bm
 import os
@@ -72,6 +73,22 @@ class test_core(unittest.TestCase):
             assert True, "Test GetFeatureOfInterest passed"
         else:
             assert False, "Test GetFeatureOfInterest falied"
+
+    def test_parse_get_data(self):
+        '''Test parsing time series'''
+        # Generate fictive response object
+        folder = Path(__file__).resolve().parent
+        with (folder / "response.xml").open("r") as fo:
+            resp_text = fo.read()
+        response = types.SimpleNamespace()
+        response.text = resp_text
+
+        _bm = bm.BomWater()
+        ts = _bm.parse_get_data(response)
+        qual = ts.Quality.value_counts()
+        assert qual[-1] == 1075
+        assert qual[10] == 295
+        assert qual[110] == 172
 
     def test_get_data_availability(self):
         '''Get Data availability test'''
