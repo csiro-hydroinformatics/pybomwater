@@ -231,21 +231,36 @@ class BomWater():
         t = iso8601.parse_date(x).astimezone(pytz.utc)
         return t.replace(tzinfo=None)
 
+
     def parse_get_data(self, response, raw=False):
 
         root = ET.fromstring(response.text)
 
-        data = [[e.text for e in root.findall('.//{http://www.opengis.net/waterml/2.0}' + t)]
-                for t in ['time', 'value']]
+        query_measurement = './/{http://www.opengis.net/waterml/2.0}'+\
+                    'MeasurementTVP'
+        key_quality_code = '{http://www.w3.org/1999/xlink}title'
 
-        dd = [(self._parse_time(t),
-               self._parse_float(v))
-              for t, v in zip(*data)]
+        data = []
+        for e in root.findall(query_measurement):
+            info = [None, float('nan'), -1]
+            for node in e:
+                if node.tag.endswith("time"):
+                    info[0] = self._parse_time(node.text)
+                elif node.tag.endswith("value"):
+                    info[1] = self._parse_float(node.text)
+                elif node.tag.endswith("metadata"):
+                    info[2] = int(node[0][0].attrib[key_quality_code])
+
+            data.append(info)
 
         if raw:
-            return dd
+            return data
 
-        return pd.DataFrame(dd, columns=('Timestamp', 'Value')).set_index('Timestamp')
+        df = pd.DataFrame(data, \
+                columns=('Timestamp', 'Value', 'Quality'))
+        df = df.set_index('Timestamp')
+
+        return df
 
     def xml_to_json(self, xml_text):
         return dict(xmltodict.parse(xml_text))
