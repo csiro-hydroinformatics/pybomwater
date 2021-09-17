@@ -87,11 +87,14 @@ class test_core(unittest.TestCase):
         ts = _bm.parse_get_data(response)
 
         assert ts.shape[1] == 3
+        assert ts.columns[0] == 'Value[cumec]'
+        assert (ts.Interpolation == "Continuous").all()
 
         qual = ts.Quality.value_counts()
-        assert qual[-1] == 1075
+        assert qual[90] == 1075
         assert qual[10] == 295
         assert qual[110] == 172
+
 
     def test_get_data_availability(self):
         '''Get Data availability test'''
