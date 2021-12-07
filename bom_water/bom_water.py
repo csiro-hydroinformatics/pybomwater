@@ -231,21 +231,91 @@ class BomWater():
         t = iso8601.parse_date(x).astimezone(pytz.utc)
         return t.replace(tzinfo=None)
 
-    def parse_get_data(self, response, raw=False):
+    def _parse_quality_code(self, node, qdefault=-1, idefault=""):
+        qcodes = [qdefault, idefault]
+        if len(node) == 0:
+            return qcodes
 
+        if len(node[0]) == 0:
+            return qcodes
+
+        for nd in node[0]:
+            for key, field in nd.items():
+                value = re.sub(".*/", "", field)
+                if re.search("interpolation", field):
+                    # Found interpolation field
+                    qcodes[1] = value
+                    break
+                elif re.search("qualifier", field):
+                    # Found qualifier field
+                    qcodes[0] = int(value)
+                    break
+
+        return qcodes
+
+    def _parse_default_node(self, default_node):
+        default_props = {\
+            "quality_code": -1, \
+            "unit": "", \
+            "interpolation": ""
+        }
+        if len(default_node)>0:
+            if len(default_node[0])>0:
+                for nd in default_node[0][0]:
+                    for key, field in nd.items():
+                        value = re.sub(".*/", "", field)
+                        if re.search("interpolation", field):
+                            # Found interpolation field
+                            default_props["interpolation"] = value
+                            break
+                        elif re.search("qualifier", field):
+                            # Found qualifier field
+                            default_props["quality_code"] = int(value)
+                            break
+                        elif key == 'code':
+                            default_props["unit"] = value
+
+        return default_props
+
+
+    def parse_get_data(self, response, raw=False):
         root = ET.fromstring(response.text)
 
-        data = [[e.text for e in root.findall('.//{http://www.opengis.net/waterml/2.0}' + t)]
-                for t in ['time', 'value']]
+        # Unit and default quality code
+        prefix = './/{http://www.opengis.net/waterml/2.0}'
+        default_node = root.findall(f'{prefix}defaultPointMetadata')
+        default_properties = self._parse_default_node(default_node)
+        unit = default_properties["unit"]
 
-        dd = [(self._parse_time(t),
-               self._parse_float(v))
-              for t, v in zip(*data)]
+        # Parse time series data
+        query_measurement = f'{prefix}MeasurementTVP'
+        data = []
+        qdefault = default_properties["quality_code"]
+        idefault = default_properties["interpolation"]
+
+        for e in root.findall(query_measurement):
+            info = [None, float('nan'), qdefault, idefault]
+            for node in e:
+                if node.tag.endswith("time"):
+                    info[0] = self._parse_time(node.text)
+                elif node.tag.endswith("value"):
+                    info[1] = self._parse_float(node.text)
+                elif node.tag.endswith("metadata"):
+                    qcodes = self._parse_quality_code(node, \
+                                        qdefault, idefault)
+                    info[2] = qcodes[0]
+                    info[3] = qcodes[1]
+            data.append(info)
 
         if raw:
-            return dd
+            return data
 
-        return pd.DataFrame(dd, columns=('Timestamp', 'Value')).set_index('Timestamp')
+        df = pd.DataFrame(data, \
+             columns=('Timestamp[UTC]', f'Value[{unit}]', 'Quality', \
+                                    'Interpolation'))
+        df = df.set_index('Timestamp')
+
+        return df
 
     def xml_to_json(self, xml_text):
         return dict(xmltodict.parse(xml_text))
