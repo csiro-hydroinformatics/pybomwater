@@ -310,10 +310,8 @@ class BomWater():
         if raw:
             return data
 
-        df = pd.DataFrame(data, \
-             columns=('Timestamp[UTC]', f'Value[{unit}]', 'Quality', \
-                                    'Interpolation'))
-        df = df.set_index('Timestamp')
+        df = pd.DataFrame(data, columns=('Timestamp[UTC]', f'Value[{unit}]', 'Quality', 'Interpolation'))
+        df = df.set_index('Timestamp[UTC]')
 
         return df
 
