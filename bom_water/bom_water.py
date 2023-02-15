@@ -4,6 +4,7 @@ import pytz
 import json
 import xmltodict
 import os
+from pathlib import Path
 import re
 import pandas as pd
 import xml.etree.ElementTree as ET
@@ -70,32 +71,37 @@ class Procedure(Builder_Property):
 class BomWater():
 
     def __init__(self):
-        self._module_dir = os.path.dirname(__file__)
+        # self._module_dir = os.path.dirname(__file__)
         self.actions = Action()
         self.features = Feature()
         self.properties = Property()
         self.procedures = Procedure()
 
+        self.cache = os.path.join(str(os.path.expanduser("~")), 'bom_water', 'cache')
+        self.waterML_GetCapabilities = os.path.join(self.cache, 'waterML_GetCapabilities.json')
+        self.stations = os.path.join(self.cache, 'stations.json')
         self.check_cache_status()#This should move to user space not be in module space
         self.init_properties()
 
     def check_cache_status(self):
-        if os.path.exists(os.path.join(self._module_dir, 'cache/waterML_GetCapabilities.json')):
+        if os.path.exists(self.waterML_GetCapabilities):
             return
         else:
             print(f'one time creating cache directory and files, this will take a little time please wait.')
-            os.mkdir(os.path.join(self._module_dir, 'cache'))
+            if not os.path.exists(self.cache):
+                os.makedirs(self.cache)
+
             response = self.request(self.actions.GetCapabilities)
-            self.xml_to_json_via_file(response.text, os.path.join(self._module_dir,'cache/waterML_GetCapabilities.json'))
+            self.xml_to_json_via_file(response.text, self.waterML_GetCapabilities)
             response = self.request(self.actions.GetFeatureOfInterest)
-            file = os.path.join(self._module_dir, 'cache/stations.json')
-            self.create_feature_list(self.xml_to_json(response.text), file)
+
+            self.create_feature_list(self.xml_to_json(response.text), self.stations)
             # self.xml_to_json_via_file(response.text, os.path.join(self._module_dir, 'cache/stations.json'))
             print(f'finished creating cache directory and files')
 
     def init_properties(self):
         getCap_json = ''
-        with open(os.path.join(self._module_dir, 'cache/waterML_GetCapabilities.json')) as json_file:
+        with open(self.waterML_GetCapabilities) as json_file:
             getCap_json = json.load(json_file)
 
         '''actions'''
@@ -118,7 +124,7 @@ class BomWater():
 
         '''Features'''
         getfeature_json = ''
-        with open(os.path.join(self._module_dir, 'cache/stations.json')) as json_file:
+        with open(self.stations) as json_file:
             getfeature_json = json.load(json_file)
         # features = getfeature_json['longName']
         for index in range(len(getfeature_json['features'])):
@@ -245,21 +251,89 @@ class BomWater():
         t = iso8601.parse_date(x).astimezone(pytz.utc)
         return t.replace(tzinfo=None)
 
-    def parse_get_data(self, response, raw=False):
+    def _parse_quality_code(self, node, qdefault=-1, idefault=""):
+        qcodes = [qdefault, idefault]
+        if len(node) == 0:
+            return qcodes
 
+        if len(node[0]) == 0:
+            return qcodes
+
+        for nd in node[0]:
+            for key, field in nd.items():
+                value = re.sub(".*/", "", field)
+                if re.search("interpolation", field):
+                    # Found interpolation field
+                    qcodes[1] = value
+                    break
+                elif re.search("qualifier", field):
+                    # Found qualifier field
+                    qcodes[0] = int(value)
+                    break
+
+        return qcodes
+
+    def _parse_default_node(self, default_node):
+        default_props = {\
+            "quality_code": -1, \
+            "unit": "", \
+            "interpolation": ""
+        }
+        if len(default_node)>0:
+            if len(default_node[0])>0:
+                for nd in default_node[0][0]:
+                    for key, field in nd.items():
+                        value = re.sub(".*/", "", field)
+                        if re.search("interpolation", field):
+                            # Found interpolation field
+                            default_props["interpolation"] = value
+                            break
+                        elif re.search("qualifier", field):
+                            # Found qualifier field
+                            default_props["quality_code"] = int(value)
+                            break
+                        elif key == 'code':
+                            default_props["unit"] = value
+
+        return default_props
+
+
+    def parse_get_data(self, response, raw=False):
         root = ET.fromstring(response.text)
 
-        data = [[e.text for e in root.findall('.//{http://www.opengis.net/waterml/2.0}' + t)]
-                for t in ['time', 'value']]
+        # Unit and default quality code
+        prefix = './/{http://www.opengis.net/waterml/2.0}'
+        default_node = root.findall(f'{prefix}defaultPointMetadata')
+        default_properties = self._parse_default_node(default_node)
+        unit = default_properties["unit"]
 
-        dd = [(self._parse_time(t),
-               self._parse_float(v))
-              for t, v in zip(*data)]
+        # Parse time series data
+        query_measurement = f'{prefix}MeasurementTVP'
+        data = []
+        qdefault = default_properties["quality_code"]
+        idefault = default_properties["interpolation"]
+
+        for e in root.findall(query_measurement):
+            info = [None, float('nan'), qdefault, idefault]
+            for node in e:
+                if node.tag.endswith("time"):
+                    info[0] = self._parse_time(node.text)
+                elif node.tag.endswith("value"):
+                    info[1] = self._parse_float(node.text)
+                elif node.tag.endswith("metadata"):
+                    qcodes = self._parse_quality_code(node, \
+                                        qdefault, idefault)
+                    info[2] = qcodes[0]
+                    info[3] = qcodes[1]
+            data.append(info)
 
         if raw:
-            return dd
+            return data
 
-        return pd.DataFrame(dd, columns=('Timestamp', 'Value')).set_index('Timestamp')
+        df = pd.DataFrame(data, columns=('Timestamp[UTC]', f'Value[{unit}]', 'Quality', 'Interpolation'))
+        df = df.set_index('Timestamp[UTC]')
+
+        return df
 
     def xml_to_json(self, xml_text):
         return dict(xmltodict.parse(xml_text))
@@ -282,11 +356,16 @@ class BomWater():
         su = spatail_utilty()
         features = bom_response_foi['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse']['sos:featureMember']
         geojson_feature = []
+        lat = ''
+        long = ''
+        pos = ''
         for feat in features:
             long_station_no = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
             if '#text' in feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']:
                 pos = feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']['#text']
             else:
+                lat = ''
+                long = ''
                 pos = ''
             if not pos == '':
                 lat = pos.split(' ')[0]

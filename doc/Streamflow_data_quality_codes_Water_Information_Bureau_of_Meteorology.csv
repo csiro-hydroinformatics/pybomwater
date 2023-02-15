@@ -1,0 +1,561 @@
+﻿#
+# Correspondance between agency quality codes and BoM quality codes and SOS2
+# qualifier.
+#
+# The table was extracted 
+# from http://www.bom.gov.au/water/hrs/qc_doc.shtml
+#
+# Correspondance between BoM quality codes and SOS2 qualifier was found in
+# http://www.bom.gov.au/waterdata/wiski-web-public/Guide%20to%20Sensor%20Observation%20Services%20(SOS2)%20for%20Water%20Data%20%20Online%20v1.0.1.pdf
+# 
+State,Agency,Agency Quality Code,Description,Bureau Quality code,SOS2 qualifier
+ACT,IconWater,1,Good reliable data,A,10
+ACT,IconWater,2,Good data; small adjustment required,A,10
+ACT,IconWater,3,Data is reflecting general trends but is not considered very accurate.,B,90
+ACT,IconWater,4,Correlated data,B,90
+ACT,IconWater,5,Water Level below CTF but data is OK,A,10
+ACT,IconWater,6,Not yet verified,E,140
+ACT,IconWater,10,Good reliable gauging,A,10
+ACT,IconWater,11,Gauging requires another gauging to substantiate its accuracy,A,10
+ACT,IconWater,12,"Unreliable, gauging disregard",F,210
+ACT,IconWater,13,Volumetric gauging,A,10
+ACT,IconWater,15,No SG reading to verify data,A,10
+ACT,IconWater,16,Intake/sensor completely buried with silt,E,140
+ACT,IconWater,17,Water level below orifice,E,140
+ACT,IconWater,19,Estimated data,A,10
+ACT,IconWater,20,Alarm test event,F,210
+ACT,IconWater,21,Sensor failed,F,210
+ACT,IconWater,22,Control drowned out by downstream influence,B,90
+ACT,IconWater,23,"Control blockage, data not representative of actual flow",B,90
+ACT,IconWater,24,Ramping of data due to algae on sensor,B,90
+ACT,IconWater,26,Good daily read records,A,10
+ACT,IconWater,27,Good twice weekly read records,A,10
+ACT,IconWater,30,Irregular Time Rate Data - weekly/monthly read.,B,90
+ACT,IconWater,31,Level data erroneous due to Venturi effect,B,90
+ACT,IconWater,32,Unknown external influence data not representative,E,140
+ACT,IconWater,33,Discharge obtained using stage only,B,90
+ACT,IconWater,34,Discharge obtained using stage and velocity data,B,90
+ACT,IconWater,51,Occasional gaps of not more than two days interpolated,C,110
+ACT,IconWater,52,"Several readings per day during high flows, plotted on strip chart then processed through digitizer",B,90
+ACT,IconWater,53,"Partially silted inlet or orifice, reliable interpolation",B,90
+ACT,IconWater,76,Reliable interpolation,B,90
+ACT,IconWater,77,"Correlation with other station, same variable",C,110
+ACT,IconWater,78,"Correlation with other station, different variable",C,110
+ACT,IconWater,79,Records partly estimated,C,110
+ACT,IconWater,80,Accumulated,A,10
+ACT,IconWater,82,Linear interpolation across gap in records.,F,210
+ACT,IconWater,102,"Obtained by conversion, from discharges plotted on old drawing",C,110
+ACT,IconWater,103,Unreliable interpolation,C,110
+ACT,IconWater,104,Records estimated,C,110
+ACT,IconWater,105,Records lost - Max. & Min. water level or total rainfall available only,F,210
+ACT,IconWater,106,Unreliable time rate,C,110
+ACT,IconWater,107,"Unreliable records, silted inlet or orifice",C,110
+ACT,IconWater,108,Gauge drowned out,C,110
+ACT,IconWater,109,"Poor quality records, plotted on strip chart then processed through digitizer",C,110
+ACT,IconWater,110,Stage variable exceeded chart limit,F,210
+ACT,IconWater,140,Level below CTF,A,10
+ACT,IconWater,145,Discharge not reliable Rating under review,B,90
+ACT,IconWater,150,Rating table extrapolated due to inadequate gauging information,C,110
+ACT,IconWater,151,Data not yet available,F,210
+ACT,IconWater,155,Discharge not available Rating under review,F,210
+ACT,IconWater,156,Sensor out ranged,F,210
+ACT,IconWater,160,Water level below sensor,F,210
+ACT,IconWater,201,Data not recorded,F,210
+ACT,IconWater,202,Rating table not available,F,210
+ACT,IconWater,255,No Record,F,210
+NSW,DILW,1,RATINGS/TS - No data in the period have been adjusted from sensing system measurement in any way - see code definitions,A,10
+NSW,DILW,2,TS - Data adjusted during processing - see code definitions,A,10
+NSW,DILW,3,RATINGS/TS - No data in the period have been adjusted from sensing system measurement in any way - see code definitions,A,10
+NSW,DILW,4,TS - Data adjusted during processing - see code definitions,A,10
+NSW,DILW,5,RATINGS/TS - No data in the period have been adjusted from sensing system measurement in any way - see code definitions,A,10
+NSW,DILW,6,GAUGINGS - Good Gauging to AS3778; TS - Data adjusted during processing see comments,A,10
+NSW,DILW,7,RATINGS/TS - Large uncertainty - data in period not adjusted from sensing system measurement in any way - see code definitions; GAUGINGS - Good Gauging,B,90
+NSW,DILW,8,TS - Data adjusted during processing - see comments,B,90
+NSW,DILW,9,RATINGS/TS - Large uncertainty - data in period not adjusted from sensing system measurement in any way - see code definitions,B,90
+NSW,DILW,10,TS - Data adjusted during processing - see comments,B,90
+NSW,DILW,11,TS-Synthetic or Artificial Data. Data which does not relate directly to the measured variable but for which a valid code is required,C,110
+NSW,DILW,12,GAUGINGS - Acceptable Gauging,F,210
+NSW,DILW,17,GAUGINGS - Reasonable Gauging,F,210
+NSW,DILW,26,"TS - Daily, accumulated or spot data",E,140
+NSW,DILW,30,Pre 21 Aug 2004 - RATINGS/TS - Highly accurate continuous records,B,90
+NSW,DILW,31,GAUGINGS - Brief Gauging High Flow,F,210
+NSW,DILW,32,Pre 21 Aug 2004 - TS - Good continuous record.,B,90
+NSW,DILW,33,"Pre 21 Aug 2004 - TS - Good record processed +/- 10mm, within 30 minutes",B,90
+NSW,DILW,34,"Pre 21 Aug 2004 - RATINGS - Good record where number of gaugings >=5, 95% within 10% curve",A,10
+NSW,DILW,35,"GAUGINGS - Normal Gauging Bad Site, Normal Gauging Backwater Affected, Surface Velocities",F,210
+NSW,DILW,36,Pre 21 Aug 2004 - TS - Good spot samples (daily read) +/-15 minutes,B,90
+NSW,DILW,38,Pre 1 Nov 1996 - RATINGS/TS - Good record processed prior to 1/11/96,A,10
+NSW,DILW,39,Pre 21 Aug 2004 - TS - Water level below sensor and no flow/dry stream,C,110
+NSW,DILW,40,Pre 21 Aug 2004 - TS - Fair measured data,B,90
+NSW,DILW,41,Pre 21 Aug 2004 - RATINGS/TS - Fair measured data,E,140
+NSW,DILW,44,Pre 21 Aug 2004 - RATINGS - Fair record where 95% of flow gaugings within 20% of discharge,B,90
+NSW,DILW,45,"Pre 21 Aug 2004 - TS - Spot samples of fair quality, +/- 1 hour",E,140
+NSW,DILW,46,"Pre 21 Aug 2004 - TS - Level estimated to +/-20mm, time unknown",E,140
+NSW,DILW,51,TS - Data estimated - see comments,C,110
+NSW,DILW,52,RATINGS - Backwater affected - see comments,B,90
+NSW,DILW,54,GAUGINGS - Unverified Gauging,F,210
+NSW,DILW,57,Pre 21 Aug 2004 - TS - Data limited by client spec. fulfils requirement of qc40,B,90
+NSW,DILW,58,Pre 1 Nov 1996 - TS - Fair record processed prior to 1/11/96,B,90
+NSW,DILW,60,"Pre 21 Aug 2004 - TS - Poor measured data, time +/- 2 hours.",B,90
+NSW,DILW,61,Pre 21 Aug 2004 - RATINGS/TS - Poor measured data,E,140
+NSW,DILW,62,Pre 21 Aug 2004 - RATINGS - High segment Rating table gaugings <5,B,90
+NSW,DILW,63,Pre 21 Aug 2004 - RATINGS - Low segment Rating table gauging<5 (often unstable),B,90
+NSW,DILW,64,"Pre 21 Aug 2004 - RATINGS - Poor measured data, 95% of flow gaugings within 30% of discharge",B,90
+NSW,DILW,65,"Pre 21 Aug 2004 - TS - Spot samples, conditions as per poor data, +/- 2 hours;",E,140
+NSW,DILW,66,"Pre 21 Aug 2004 - TS - Data within +/-20cm, time unknown",C,110
+NSW,DILW,67,"Pre 21 Aug 2004 - RATINGS/TS - Data limited by client specifications - Poor measured data, time +/- 2 hour",B,90
+NSW,DILW,68,Pre 1 Nov 1996 - RATINGS/TS - Record processed prior to 1/11/96 considered poor,B,90
+NSW,DILW,69,Pre 21 Aug 2004 - RATINGS - Rating table gaugings >=5 Less than 95% within 30% of curve,F,210
+NSW,DILW,71,GAUGINGS - Part Gauged/ Estimated,F,210
+NSW,DILW,75,Pre 21 Aug 2004 - RATINGS - Reasonable estimate where rating derived by one method,C,110
+NSW,DILW,77,"Pre 21 Aug 2004 - RATINGS/TS - Data limited by client specifications - Poor measured data, time +/- 2 hour",B,90
+NSW,DILW,80,"Pre 1 Nov 1996 - RATINGS - Rating processed prior to 1/11/96, coded estimated (poor)",C,110
+NSW,DILW,82,Pre 21 Aug 2004 - RATINGS - Good estimate where rating has 3 methods agreeing to 10%,C,110
+NSW,DILW,91,Pre 21 Aug 2004 - RATINGS - Fair estimate where rating has 2 methods agreeing to 20%,C,110
+NSW,DILW,94,"Pre 1 Nov 1996 - RATINGS - Rating processed prior to 1/11/96, coded extrapolated - good",C,110
+NSW,DILW,95,"Pre 1 Nov 1996 - RATINGS - Rating processed prior to 1/11/96, coded extrapolated - fair",C,110
+NSW,DILW,100,Quality unknown,E,140
+NSW,DILW,130,Not quality coded - subject to change,E,140
+NSW,DILW,140,RATINGS - Current rating - may be subject to change.,E,140
+NSW,DILW,145,TS - Telemetry system added point,E,140
+NSW,DILW,151,Pre Aug 2004 QC - Data Not Available,F,210
+NSW,DILW,152,Pre 21 Aug 2004 - RATINGS/TS - Backwater affected - see comments,F,210
+NSW,DILW,153,GAUGINGS - Invalid Gauging,F,210
+NSW,DILW,180,"Rating table out of range, no flow available",F,210
+NSW,DILW,201,Data unavailable,F,210
+NSW,DILW,255,Data Unavailable,F,210
+NSW,NSW Water,5,  Good quality edited data,A,10
+NSW,NSW Water,6,  Reasonably good quality edited data,B,90
+NSW,NSW Water,7,  Good quality contractor supplied data,A,10
+NSW,NSW Water,8,  Good quality data but standards compromised to meet client   requirements,B,90
+NSW,NSW Water,10,  Good quality digitized data,A,10
+NSW,NSW Water,11,  Good quality record processed pre-1995 and coded either 5 or 6,B,90
+NSW,NSW Water,12,  Good quality telemetered data,A,10
+NSW,NSW Water,19,  Good quality rating extrapolation,B,90
+NSW,NSW Water,20,  Good qual theoretical rating-Standard primary device e.g. weir,B,90
+NSW,NSW Water,25,  Good quality daily totals derived from logged data,A,10
+NSW,NSW Water,26,  Good quality daily read records,A,10
+NSW,NSW Water,28,  Good quality cumulative total for daily readings after an unread   period,A,10
+NSW,NSW Water,29,  Daily read gauge not read,B,90
+NSW,NSW Water,30,  Below sensor with NO flow conditions,B,90
+NSW,NSW Water,31,  Evaporation pan overflowed - nil evap.,A,10
+NSW,NSW Water,35,  Good quality data with fog,B,90
+NSW,NSW Water,36,  Good quality snow data,A,10
+NSW,NSW Water,39,  Below instrument threshold,B,90
+NSW,NSW Water,40,  Good quality estimate (correlation or other reliable method),A,10
+NSW,NSW Water,55,  Fair quality edited data,B,90
+NSW,NSW Water,57,  Fair quality contractor supplied data,C,110
+NSW,NSW Water,58,  Fair quality data but standards compromised to meet customer   requirements,C,110
+NSW,NSW Water,60,  Fair quality digitised data,B,90
+NSW,NSW Water,61,  Fair quality record processed pre 1995 and quality coded 55,C,110
+NSW,NSW Water,62,  Fair quality telemetered data,B,90
+NSW,NSW Water,69,  Fair quality rating extrapolation,C,110
+NSW,NSW Water,70,  Fair quality theoretical rating derived by two or more means and   not substantiated by discharge observations,B,90
+NSW,NSW Water,75,  Fair quality daily totals derived from daily read data,B,90
+NSW,NSW Water,76,  Fair quality daily read record,B,90
+NSW,NSW Water,78,  Fair quality cumulative total for daily readings after an unread   period,B,90
+NSW,NSW Water,79,  Fair quality daily read gauge not read,B,90
+NSW,NSW Water,85,  Fair quality data with fog,B,90
+NSW,NSW Water,86,  Fair quality snow data,B,90
+NSW,NSW Water,90,  Fair quality estimation (correlation or other method),B,90
+NSW,NSW Water,105,  Poor quality edited data,E,140
+NSW,NSW Water,107,  Poor quality contractor supplied data,E,140
+NSW,NSW Water,108,  Poor quality data - standards compromised to meet client   specifications prior to December 2003,E,140
+NSW,NSW Water,110,  Poor quality digitised data,E,140
+NSW,NSW Water,111,  Poor quality records processed pre 1995 and quality coded 105,E,140
+NSW,NSW Water,112,  Poor quality telemetered data,E,140
+NSW,NSW Water,119,  Poor quality rating extrapolation,E,140
+NSW,NSW Water,120,  Poor quality theoretical rating using one formal method of   extension & has not been substantiated by discharge observations,E,140
+NSW,NSW Water,125,  Poor quality daily totals derived from logged data,E,140
+NSW,NSW Water,126,  Poor quality daily read records,E,140
+NSW,NSW Water,128,  Poor quality cumulative total for daily readings after an unread   period,E,140
+NSW,NSW Water,129,  Poor quality daily read gauge not read,E,140
+NSW,NSW Water,135,  Poor quality data with fog,E,140
+NSW,NSW Water,136,  Poor quality data with snow,E,140
+NSW,NSW Water,140,  Estimate that reasonably reflects the actual event with edit     comments inserted to explain method of estimation,E,140
+NSW,NSW Water,149,  Contractors data supplied without quality codes,E,140
+NSW,NSW Water,150,  Data not yet quality coded,E,140
+NSW,NSW Water,151,  Backwater affected,E,140
+NSW,NSW Water,152,  Data for which quality,E,140
+NSW,NSW Water,160,  Above instrument threshold (Range of instrument exceeded),E,140
+NSW,NSW Water,161,  SENSOR OUT OF WATER WITH FLOW,E,140
+NSW,NSW Water,162,  SENSOR OUT OF WATER WITH NO FLOW,E,140
+NSW,NSW Water,181,  Time of sample not known - data satisfactory,E,140
+NSW,NSW Water,201,  Data not recorded - logger/sensor not installed,F,210
+NSW,NSW Water,202,  Data not available for release (e.g. requires extensive editing),F,210
+NSW,NSW Water,204,  Data lost due to vandalism,F,210
+NSW,NSW Water,205,  Data lost,F,210
+NSW,NSW Water,207,  Contractors data lost or not recorded,F,210
+NSW,NSW Water,255,  Hydsys default - no data,F,210
+NT,DENR,1,Good - continuous data,A,10
+NT,DENR,2,good quality - continuous data - some minor editing,A,10
+NT,DENR,6,Good Point data-manually entered which adequately represents continuous record,A,10
+NT,DENR,7,Good Isolated Point,A,10
+NT,DENR,11,Good Gauging,A,10
+NT,DENR,41,Good Rating,A,10
+NT,DENR,45,Good Rating Extrapolated,A,10
+NT,DENR,51,Satisfactory - continuous data,B,90
+NT,DENR,52,Satisfactory - estimated continuous data,B,90
+NT,DENR,56,Satisfactory Point data—manually entered—which adequately represents data,B,90
+NT,DENR,57,Satisfactory Isolated Point,B,90
+NT,DENR,61,Satisfactory Gauging,B,90
+NT,DENR,91,Satisfactory Rating,B,90
+NT,DENR,95,Satisfactory Rating - extrapolated,B,90
+NT,DENR,101,Poor - continuous data,B,90
+NT,DENR,102,Poor - estimated continuous data,B,90
+NT,DENR,106,Poor Point data manually entered,B,90
+NT,DENR,107,Poor Isolated Point,B,90
+NT,DENR,109,Estimated Data - original lost,C,110
+NT,DENR,111,Poor Gauging,B,90
+NT,DENR,141,Poor Rating,B,90
+NT,DENR,142,Telemetry data. No visual verification. Final quality code not yet assigned.,E,140
+NT,DENR,145,Poor rating - extrapolated,B,90
+NT,DENR,146,"Rating based on theoretical method, use with caution",C,110
+NT,DENR,149,Gauging with no Calibration Reading,E,140
+NT,DENR,150,Rating under Review - not Quality Coded,E,140
+NT,DENR,151,Blank or no data (Met. Bureau rainfall only),F,210
+NT,DENR,152,Incomplete record,E,140
+NT,DENR,162,Severe tidal influence - not to be integrated,E,140
+NT,DENR,170,"Data not processed [Historic, Q=Y]",E,140
+NT,DENR,171,Data awaiting editing and quality coding.,E,140
+NT,DENR,172,Isolated point - no integration/not quality coded,E,140
+NT,DENR,173,Tidal influence- Orig. data (VAR=100)+ Integrated data (VAR=102,E,140
+NT,DENR,174,Vax conversion code: data to be Edited to another Qual. code,E,140
+NT,DENR,175,Dry - below orifice,B,90
+NT,DENR,176,Wet - below orifice,B,90
+NT,DENR,190,"Missing record, gap auto filled.",F,210
+NT,DENR,192,Lookup Table - exceeded,F,210
+NT,DENR,250,"Non-sensible record - used for Time or below Inlet, above CTF",F,210
+NT,DENR,251,"Non-sensible record, sensor outranged",F,210
+NT,DENR,252,Sensor broken,F,210
+NT,DENR,253,Logger broken,F,210
+NT,DENR,254,No Recorded Data (Instrumentation removed),F,210
+NT,DENR,255,No Record or Record Lost,F,210
+QLD,DNRME,1,Good (actual),A,10
+QLD,DNRME,9,CITEC - Normal Reading,A,10
+QLD,DNRME,10,Good,A,10
+QLD,DNRME,15,Water level below threshold (no flow),A,10
+QLD,DNRME,19,CITEC - No Flow Reading,A,10
+QLD,DNRME,20,Fair,A,10
+QLD,DNRME,26,BOM data - Good Daily Read Records,A,10
+QLD,DNRME,30,Poor,B,90
+QLD,DNRME,31,Gauging temp - Good,A,10
+QLD,DNRME,32,Gauging temp - Fair,A,10
+QLD,DNRME,33,Gauging temp - Poor,B,90
+QLD,DNRME,34,Gauging temp - composite,B,90
+QLD,DNRME,35,Gauging temp - equipment problems causing incomplete gauging - suspect procedures and methods. Possible inflow between gauging and station.,B,90
+QLD,DNRME,36,Gauging temp - Velocity measurements taken on surface only or velocity measurements with floats.,B,90
+QLD,DNRME,37,Gauging temp - Discharge correlated from U/S or D/S stations.,B,90
+QLD,DNRME,38,Gauging temp - Interim code for data transferred from CITEC. Data not yet Quality Coded.,E,140
+QLD,DNRME,39,Gauging temp - Data of No Value,F,210
+QLD,DNRME,59,CITEC - Derived Height,A,10
+QLD,DNRME,60,Estimate,C,110
+QLD,DNRME,69,CITEC - Derived Discharge,A,10
+QLD,DNRME,79,CITEC - Backwater Record,B,90
+QLD,DNRME,80,BOM data - Accumulated,A,10
+QLD,DNRME,119,Old - Gauge Ht > instrument threshold,C,110
+QLD,DNRME,130,Not coded value,E,140
+QLD,DNRME,140,Interim value,E,140
+QLD,DNRME,150,Unknown,E,140
+QLD,DNRME,151,Data not yet available,F,210
+QLD,DNRME,160,Suspect,F,210
+QLD,DNRME,170,Water level above threshold,F,210
+QLD,DNRME,180,Old - Gauge Height < Instrument Threshold,F,210
+QLD,DNRME,200,Water level below threshold,F,210
+SA,DEWNR,1,Good,A,10
+SA,DEWNR,25,Operational Data,A,10
+SA,DEWNR,30,Fair,B,90
+SA,DEWNR,31,Fair - Estimated,C,110
+SA,DEWNR,36,Fair - Extrapolated Rating,B,90
+SA,DEWNR,37,Fair - Theoretical Rating,B,90
+SA,DEWNR,40,Fair - Extrapolated Rating,C,110
+SA,DEWNR,41,Fair - Theoretical Rating,C,110
+SA,DEWNR,54,Fair - Smoothed Data,B,90
+SA,DEWNR,80,Fair - Accumulated Data,B,90
+SA,DEWNR,81,Fair - Accumulated Total,B,90
+SA,DEWNR,82,Fair - Straight Line Interpolation Between Points,B,90
+SA,DEWNR,84,Fair - Rainfall Less Than 0.2mm,B,90
+SA,DEWNR,85,Fair - Redistributed Accumulated Daily Data,C,110
+SA,DEWNR,90,Poor,C,110
+SA,DEWNR,91,Poor - Estimated,C,110
+SA,DEWNR,100,Poor - Extrapolated Rating,C,110
+SA,DEWNR,101,Poor - Theoretical Rating,C,110
+SA,DEWNR,102,Poor - Extrapolated Rating,C,110
+SA,DEWNR,108,Poor - Theoretical Rating,C,110
+SA,DEWNR,127,Poor - Nil Daily Record within Accumulated Period,C,110
+SA,DEWNR,128,Poor - Accumulated Total for Preceding Period of Daily Data.,C,110
+SA,DEWNR,129,Poor - Distributed Total,C,110
+SA,DEWNR,130,Water Level Below Recordable Range,E,140
+SA,DEWNR,132,Quality Unknown,E,140
+SA,DEWNR,150,Unverified Telemetered Data,E,140
+SA,DEWNR,153,Not Recorded - Outside Recordable Range,F,210
+SA,DEWNR,154,Not Operating,F,210
+SA,DEWNR,201,Missing,F,210
+SA,DEWNR,202,Missing - Outside Rating Range,F,210
+TAS,DPIPWE,1,Excellent Data,A,10
+TAS,DPIPWE,3,Excellent Rating,A,10
+TAS,DPIPWE,11,Good Data,A,10
+TAS,DPIPWE,13,Good Rating,A,10
+TAS,DPIPWE,21,Fair Data,B,90
+TAS,DPIPWE,22,Good Estimate,B,90
+TAS,DPIPWE,23,Fair Rating,B,90
+TAS,DPIPWE,24,Good Theoretical Rating,B,90
+TAS,DPIPWE,25,Forecast data from modelling program,C,110
+TAS,DPIPWE,29,"Data from external source, minor checking and editing completed.",E,140
+TAS,DPIPWE,30,"Data from external source, no checking or editing done.",E,140
+TAS,DPIPWE,31,Poor,C,110
+TAS,DPIPWE,32,Fair Estimated data,C,110
+TAS,DPIPWE,33,Poor Rating,C,110
+TAS,DPIPWE,34,Fair estimated rating,C,110
+TAS,DPIPWE,42,Poor estimated data,C,110
+TAS,DPIPWE,44,Poor estimated rating,C,110
+TAS,DPIPWE,101,Data checked and found unreliable,E,140
+TAS,DPIPWE,141,SCADA data not verified.,E,140
+TAS,DPIPWE,142,Telemetry data not verified.,E,140
+TAS,DPIPWE,145,Failed minimum range check,E,140
+TAS,DPIPWE,146,Failed maximum range check,E,140
+TAS,DPIPWE,147,Non Conforming data. Known Errors.,E,140
+TAS,DPIPWE,150,Unverified Data or Rating. Final quality yet to be assigned.,E,140
+TAS,DPIPWE,180,Unprocessed Record,F,210
+TAS,DPIPWE,190,Lost record or insufficient data for reasonable archive,F,210
+TAS,DPIPWE,200,No data available for this period,F,210
+TAS,DPIPWE,201,Rating application error,F,210
+TAS,DPIPWE,202,Data point below lower limit of rating,F,210
+TAS,DPIPWE,203,Data point above upper limit of rating,F,210
+TAS,DPIPWE,204,No rating for chosen period of data,F,210
+TAS,DPIPWE,205,No applicable rating,F,210
+TAS,DPIPWE,210,Undefined Vector,F,210
+TAS,DPIPWE,211,Integration method not appropriate,F,210
+TAS,DPIPWE,212,Differentiation method not appropriate,F,210
+TAS,DPIPWE,213,Data type change or other error - No Aggregation,F,210
+TAS,DPIPWE,214,Data type change or other error - No Interpolation,F,210
+TAS,DPIPWE,220,Value of time series point unknown,F,210
+TAS,DPIPWE,225,Serial Run Gap. Check reason then assign appropriate code,F,210
+TAS,DPIPWE,230,User specified limits exceeded in analysis,F,210
+TAS,HydroTAS,1,Excellent Data,E,140
+TAS,HydroTAS,3,Excellent Rating,E,140
+TAS,HydroTAS,5,"NEM Energy Metering, Actual Meter",E,140
+TAS,HydroTAS,7,Good data.  Confirmed by site visit.  (Dam Safety data only),E,140
+TAS,HydroTAS,11,Good Data,E,140
+TAS,HydroTAS,13,Good Rating,E,140
+TAS,HydroTAS,21,Fair Data,E,140
+TAS,HydroTAS,22,Good Estimated Data.,E,140
+TAS,HydroTAS,23,Fair Rating,E,140
+TAS,HydroTAS,24,Good Extrapolated Rating,E,140
+TAS,HydroTAS,25,Modelled or Derived data. Includes forecast data or data derived from ratings etc.,E,140
+TAS,HydroTAS,27,Interim code for telemetered data visually checked on graphical editor against appropriate comparison plots. No fault found but a more definitive final code cannot be assigned until after a field visit.,E,140
+TAS,HydroTAS,29,Data from source external to Resource Monitoring & Information Group. Minor checking & editing may have been done.,E,140
+TAS,HydroTAS,30,No requirement for Quality Coding and/or checking or editing.  Data is often from source external to Resource Monitoring & Information Group.,E,140
+TAS,HydroTAS,31,Poor Data,E,140
+TAS,HydroTAS,32,Fair Estimated Data,E,140
+TAS,HydroTAS,33,Poor Rating,E,140
+TAS,HydroTAS,34,Fair Extrapolated Rating,E,140
+TAS,HydroTAS,40,Excluded Gauging. A gauging that has been formally identified and excluded as part of a rating review. The gauging comment will say why it was excluded. No code necessary.,E,140
+TAS,HydroTAS,41,Important Comment ...,E,140
+TAS,HydroTAS,42,Poor Estimated Data,E,140
+TAS,HydroTAS,44,Poor Extrapolated Rating,E,140
+TAS,HydroTAS,101,Data that has been checked and found to be unreliable.,F,210
+TAS,HydroTAS,138,"NEM Energy Metering,  Estimated Energy Data",E,140
+TAS,HydroTAS,139,"NEM Energy Metering, Final estimation or substitution",E,140
+TAS,HydroTAS,140,Manually acquired.  Unverified data. May have been visually inspected. Final quality code not yet assigned.,E,140
+TAS,HydroTAS,141,SCADA data. Not verified. Final quality code not yet assigned.,E,140
+TAS,HydroTAS,142,Telemetry data.  Not verified. Final quality code not yet assigned.  [Same code marker (T) as Q149],E,140
+TAS,HydroTAS,143,"Acquired data, not verified, flagged by source as suspect. For SCADA data the associated source Q code is 128.  Final quality code yet to be assigned.",E,140
+TAS,HydroTAS,144,"NEM Energy Metering, Substitution",E,140
+TAS,HydroTAS,145,Minimum range check threshold exceeded. Final quality code not yet assigned. Don’t tinker with it. It is also assigned in the system setup table See also Q155 and 191,E,140
+TAS,HydroTAS,146,Maximum range check threshold exceeded. Final quality code not yet assigned. Don’t tinker with it. It is also assigned in the system setup table See also Q156 and 191,E,140
+TAS,HydroTAS,147,Non conforming data. Known errors. LOW IMPACT. Final quality code not yet assigned.,E,140
+TAS,HydroTAS,149,"Data from an EXTERNAL source.  No verification. Final quality code not assigned and, for many cases, it may never be assigned. [Same code marker (T) as Q142]",E,140
+TAS,HydroTAS,150,Partial Statistic - some data missing in period.  A SYSTEM quality code applied to data when processing/outputting.  Not to be applied by individuals as a quality code when editing data.,F,210
+TAS,HydroTAS,155,"Minimum range check threshold exceeded, data excluded from analysis. Data value is preserved. Used by automated range check scripts see also Q code 145 and 191",F,210
+TAS,HydroTAS,156,"Maximum range check threshold exceeded, data excluded from analysis. Data value is preserved. Used by automated range check scripts see also Q code 146 and 191",F,210
+TAS,HydroTAS,157,Control value not for inclusion in analysis,F,210
+TAS,HydroTAS,160,Where a param val does not exist at that time (a); Null turbidity when 0 flow in a stream (b); Vals exceed range vals of deliberately limited range sensor (c); Input series to virtual out of range (d).,F,210
+TAS,HydroTAS,170,Non conforming data. Known errors. HIGH IMPACT. Final quality code not yet assigned.,F,210
+TAS,HydroTAS,180,"Unprocessed Record, data exists (e.g. charts) but not yet imported.",F,210
+TAS,HydroTAS,190,"Lost record, erroneous data or insufficient data for reasonable archive; or DATA lost from an OPEN site.",F,210
+TAS,HydroTAS,191,Lost data where out of range data deemed spurious has been amended as it was archived.  The data value is what the spurious value was clipped to. Pre-existing clips have not been converted to output to t,F,210
+TAS,HydroTAS,200,No data available for this series for the period. Associated with series that are CLOSED and later RE-OPENED.  Do not confuse with QC190 that covers data that was lost from an OPEN site.,F,210
+TAS,HydroTAS,201,Error occurred in applying rating equation to data,F,210
+TAS,HydroTAS,202,Data point below lower limit of rating,F,210
+TAS,HydroTAS,203,Data point above upper limit of rating,F,210
+TAS,HydroTAS,204,Period found but specified rating does not exist,F,210
+TAS,HydroTAS,205,No application period found for data point.     Rating period error.,F,210
+TAS,HydroTAS,206,No conversion available,F,210
+TAS,HydroTAS,207,Interpolation error. This may be caused by a timing error or by incompatible data types.,F,210
+TAS,HydroTAS,208,Rating/conversion is non invertible.,F,210
+TAS,HydroTAS,209,Chain conversion uses datum which is outside range of rating,F,210
+TAS,HydroTAS,210,Undefined vector. Resultant vector has zero length.,F,210
+TAS,HydroTAS,211,"Integration inappropriate for this data type - data types 3,4,7",F,210
+TAS,HydroTAS,212,"Differentiation inappropriate for this data type - data types 2,3,4,7,8,9",F,210
+TAS,HydroTAS,213,Data Type change or other problem encountered - no Aggregation allowed.,F,210
+TAS,HydroTAS,214,Data Type change or other problem encountered - no Interpolation allowed.,F,210
+TAS,HydroTAS,220,No value or quality associated with current point.,F,210
+TAS,HydroTAS,225,Gap between time series records. Code assigned when gap is filled automatically by archiving operations. Check reason and then assign appropriate quality code,F,210
+TAS,HydroTAS,230,Original quality in user specified exclusion range. Generated by QMax and QExclude transformations.,F,210
+TAS,HydroTAS,255,Used for initialisation purposes,F,210
+VIC,DELWP,1,Good continuous records,A,10
+VIC,DELWP,2,Good quality edited data,A,10
+VIC,DELWP,3,Linear infill to first value in block (no data lost),A,10
+VIC,DELWP,4,Temporary coded for Currumbeene data,E,140
+VIC,DELWP,5,Drawdown - chart rating applies,A,10
+VIC,DELWP,6,Phased Rating Applicable - gradual changing of control & channel,A,10
+VIC,DELWP,8,Pool reading only,A,10
+VIC,DELWP,9,Pool dry - no data collected,A,10
+VIC,DELWP,10,Data transposed from recorder chart,A,10
+VIC,DELWP,13,Accurate derived data from multiple sources (level & flow),A,10
+VIC,DELWP,14,Telemetry data not stored in archive,A,10
+VIC,DELWP,15,Minor editing,A,10
+VIC,DELWP,20,Edited to measurements,A,10
+VIC,DELWP,26,Daily read records (MW - Good periodic data),A,10
+VIC,DELWP,30,Good Meas. - mult. point; 40 sec timing (Good acc. data - MW),A,10
+VIC,DELWP,31,Good Meas. - Adeq. verts & obs; 40 sec timing (Good acc. data - MW),A,10
+VIC,DELWP,32,Fair Measurement - Weighted mean gauge height; turbulent flow; flow angle extreme,B,90
+VIC,DELWP,35,Composite Measurement - Segments taken from several gaugings to create a composite,B,90
+VIC,DELWP,36,Measurement for sampling purposes. Rough estimate,C,110
+VIC,DELWP,42,Low velocity acoustic record affected by wind or gate opening,E,140
+VIC,DELWP,50,Medium editing >Q=15 (1996 on & MW) or HYMAN data import (pre-1996),B,90
+VIC,DELWP,75,Height correction applied,B,90
+VIC,DELWP,76,Reliable interpolation,B,90
+VIC,DELWP,77,Correlation with other station; same variable,B,90
+VIC,DELWP,100,Irregular data use with caution,E,140
+VIC,DELWP,104,Records estimated,C,110
+VIC,DELWP,146,Drawdown - no rating applies,E,140
+VIC,DELWP,148,Theoretical rating table applied,C,110
+VIC,DELWP,149,Raw data as received from Serco (MW),E,140
+VIC,DELWP,150,Rating extrapolated due to insufficient gaugings (Unrel. data - MW),C,110
+VIC,DELWP,151,Data lost due to natural causes - NRE approved loss,F,210
+VIC,DELWP,152,Refer station file,E,140
+VIC,DELWP,153,PROBE OUT OF WATER/BELOW INSTRUMENT THRESHOLD,F,210
+VIC,DELWP,155,ABOVE INSTRUMENT THRESHOLD,F,210
+VIC,DELWP,160,Backed-up by d/s influence. (Unreliable periodic data - MW),E,140
+VIC,DELWP,161,Debris Effecting Sensor.,F,210
+VIC,DELWP,165,Suspect or bad data supplied by other authority,E,140
+VIC,DELWP,170,Raw unedited data stored in archive (Unrel. accum. data - MW),E,140
+VIC,DELWP,180,Equipment malfunction,F,210
+VIC,DELWP,190,Data unavailable station discontinued,F,210
+VIC,DELWP,200,Data available but not digitised,F,210
+VIC,DELWP,201,Data not rec. - no correlation available (Station not op. - MW),F,210
+VIC,DELWP,235,Poor Measurement - Not enough verticals or observations; not enough information,E,140
+VIC,DELWP,236,Suspect or Incomplete Measurement - Equipment suspect or giving problems causing measurement to be aborted.,E,140
+VIC,DELWP,237,Surface Velocities - Velocity measurements taken on surface only.,B,90
+VIC,DELWP,238,Control Leaking - Control leaking; either as noted on measurement or chart.,E,140
+VIC,DELWP,239,Backed up Flow Measurement - Measurement is affected by backup.,A,10
+VIC,DELWP,240,Not Coded Measurement - Measurement not coded as per HYDSYS System.,E,140
+VIC,DELWP,250,Rating table suspended,F,210
+VIC,DELWP,254,Rating table exceeded,F,210
+VIC,DELWP,255,No Data Exists (Lost data - MW),F,210
+VIC,Melbourne Water,1,Very good data-no editing required (+/- 1-5mm error or +/-5% deviation from Bulk or Cal check +/-3% and Excellent reference to nearby gauge),A,10
+VIC,Melbourne Water,2,Good quality edited data-minor editing only (+/-5% deviation from Bulk or Calibration check +/-3% and Excellent reference to nearby gauge),A,10
+VIC,Melbourne Water,3,Linear infill to first value in block (no data loss - Thiess Quality),B,90
+VIC,Melbourne Water,7,Very good data/ rating not applicable due to backwater effect,A,10
+VIC,Melbourne Water,8,Pool reading only (Thiess Quality),A,10
+VIC,Melbourne Water,9,Pool dry - no data collected (Thiess Quality),E,140
+VIC,Melbourne Water,14,Unknown quality,E,140
+VIC,Melbourne Water,15,Minor editing only (Thiess Quality),A,10
+VIC,Melbourne Water,19,Good quality rating extrapolation,A,10
+VIC,Melbourne Water,26,Good periodical data (MWH),A,10
+VIC,Melbourne Water,27,Good periodical data (Others - not continuous reading),A,10
+VIC,Melbourne Water,30,Good accumulated data (MWH - continuous reading)/ Good measurement multi point 40 sec timing,A,10
+VIC,Melbourne Water,31,Good accumulated data (Others - continuous reading)/ Good measurement adeq. verts & obs -40sec timing,A,10
+VIC,Melbourne Water,32,Fair measurement - weighted mean gauge height/ turbulent flow/ flow angle extreme,E,140
+VIC,Melbourne Water,33,3 point measurement - applicable in narrow sections e.g. sewers,E,140
+VIC,Melbourne Water,34,Bucket measurement - applicable to weirs/ pipe outflow etc.,E,140
+VIC,Melbourne Water,35,Composite measurement - segments taken from several gaugings to create a composite,E,140
+VIC,Melbourne Water,36,Measurement for sampling purposes - rough estimate,C,110
+VIC,Melbourne Water,41,Good Data not validated by other means,A,10
+VIC,Melbourne Water,50,Good or Reliable data-medium editing required (+/- 5-10mm error or +/-10% deviation from Bulk or Cal check +/-5%/ Good ref to nearby gauge),A,10
+VIC,Melbourne Water,57,Good/reliable data or rating not applicable due to backwater,A,10
+VIC,Melbourne Water,65,Other authorities data (Thiess Quality),B,90
+VIC,Melbourne Water,69,Fair quality rating extrapolation,B,90
+VIC,Melbourne Water,75,Fair data-major editing required (+/- 10-15mm error or +/-15% deviation from Bulk or Cal check +/-7% and Fair reference to nearby gauge),B,90
+VIC,Melbourne Water,76,Fair data/ edited by correlation with another site/ gaps <0.5day filled by interpolation,B,90
+VIC,Melbourne Water,77,Reliable data correlation with another station same variable,C,110
+VIC,Melbourne Water,79,Fair data/ rating not applicable due to backwater effect,B,90
+VIC,Melbourne Water,82,Linear interpolation across gap in records,B,90
+VIC,Melbourne Water,101,Reliable data estimate using good correlation with other variable/ Estimated Rating or regenerated velocity sewerage data,C,110
+VIC,Melbourne Water,120,Estimated data not using correlation (ave. dry weather hydrograph used) or Rating extrapolated,C,110
+VIC,Melbourne Water,130,Estimated periodical data/ slightly suspect staff gauge readings,C,110
+VIC,Melbourne Water,140,"Estimated accumulated data/ slightly suspect check bottle reading, etc.",C,110
+VIC,Melbourne Water,147,Raw unverified data from source system (e.g. SCADA/ Logger),E,140
+VIC,Melbourne Water,148,Theoretical rating table applied,C,110
+VIC,Melbourne Water,149,Raw data as received from contractor/ only quality codes changed,B,90
+VIC,Melbourne Water,150,Poor data/ historical rating or rating not verified/ use with caution at clients discretion,F,210
+VIC,Melbourne Water,151,Poor or unverified data. Use with caution (+/- 15-25mm error or +/-20% deviation from Bulk or Cal check +/-10% and poor ref to nearby gauge),F,210
+VIC,Melbourne Water,153,Probe out of water or outside instrument threshold,F,210
+VIC,Melbourne Water,155,Poor data due to reasons beyond the control of hydrographic contractor,F,210
+VIC,Melbourne Water,157,Poor data/ rating not applicable due to backwater or drawdown effect,F,210
+VIC,Melbourne Water,160,Unreliable data (>25mm error) or unreliable periodical data,F,210
+VIC,Melbourne Water,161,Unreliable data due to reasons beyond the control of hydrographic contractor,F,210
+VIC,Melbourne Water,170,Unreliable accumulated data/ suspect check reading,F,210
+VIC,Melbourne Water,201,Station not commissioned - instrument not installed or known not to be working or no sewerage data,F,210
+VIC,Melbourne Water,204,Unknown Quality (perhaps introduced from another agency),E,140
+VIC,Melbourne Water,235,Poor measurement - not enough verticals or observations,F,210
+VIC,Melbourne Water,236,Suspect or incomplete measurement - equipment problems causing measurement to be aborted,F,210
+VIC,Melbourne Water,237,Surface velocities - velocity measurement taken on surface only,B,90
+VIC,Melbourne Water,238,Control leaking as noted on measurement or chart,B,90
+VIC,Melbourne Water,239,Backed up flow measurement - measurement affected by back water,B,90
+VIC,Melbourne Water,240,Data lost due to reasons beyond the control of hydrographic contractor,F,210
+VIC,Melbourne Water,241,Data lost,F,210
+VIC,Melbourne Water,250,Invalid data due to telemetry system fault,F,210
+VIC,Melbourne Water,253,No rating table period for site,F,210
+VIC,Melbourne Water,254,No data available or rating table exceeded,F,210
+VIC,Melbourne Water,255,Gap Quality,F,210
+,MDBA,1,Reliable measured continuous data.,A,10
+,MDBA,10,Credible continuous data,A,10
+,MDBA,20,Reliable Intermittent data.,A,10
+,MDBA,30,Measured edited fair quality,B,90
+,MDBA,40,Modelled/correlated/estimated,C,110
+,MDBA,50,Interpolated and edited measured data,C,110
+,MDBA,60,Credible Intermittent,C,110
+,MDBA,70,Measured data - poor quality,C,110
+,MDBA,80,Modelled/correlated/extrapolated/interpolated,C,110
+,MDBA,90,Poor Intermittent,C,110
+,MDBA,100,Dubious data - see comments,C,110
+,MDBA,120,Correlated/interpolated - QC unknown,C,110
+,MDBA,132,Manually entered data - QC unknown,C,110
+,MDBA,136,Auto/Tele entered data -QC unknown,C,110
+,MDBA,138,Daily Point Data,C,110
+,MDBA,140,Intermittent - QC unknown,C,110
+,MDBA,150,MAXIMUM GOOD QUALITY,C,110
+,MDBA,155,Data lost - continuous,F,210
+,MDBA,160,Data lost - Intermittent,F,210
+,MDBA,213,Missing Data,F,210
+,MDBA,240,Unverified Continuous Ops Data,F,210
+,MDBA,242,Suspect Continuous Ops Data- Hyaudit failed,F,210
+WA,DWER,1,Very good record,A,10
+WA,DWER,2,Very good record - Corrections applied,A,10
+WA,DWER,3,Good record - Corrections or estimations applied,A,10
+WA,DWER,4,Estimated record - Good,C,110
+WA,DWER,5,Estimated record - Fair,C,110
+WA,DWER,6,Estimated record - Poor,C,110
+WA,DWER,10,Estimated record - Not reviewed / quality not known,E,140
+WA,DWER,11,Theoretical rating,C,110
+WA,DWER,12,Estimated rating,C,110
+WA,DWER,24,Rainday within period of accumulated record,B,90
+WA,DWER,25,Accumulated record,A,10
+WA,DWER,30,"Station data, as supplied by BoM",E,140
+WA,DWER,31,Deaccumulated using nearby station,C,110
+WA,DWER,32,Deaccumulated using interpolated data,C,110
+WA,DWER,33,"Nearby station, data from BoM",E,140
+WA,DWER,34,Interpolated daily observations,B,90
+WA,DWER,35,Interpolated long term average,C,110
+WA,DWER,41,Gauging - Excellent,A,10
+WA,DWER,42,Gauging - Good,A,10
+WA,DWER,43,Gauging - Fair,B,90
+WA,DWER,44,Gauging - Poor,B,90
+WA,DWER,100,Sample Group Code - WIN SAMP CUSTODIANS,E,140
+WA,DWER,101,Sample Group Code - WIN SAMP CUSTODIANS,E,140
+WA,DWER,102,Sample Group Code - WIN SAMP CUSTODIANS,E,140
+WA,DWER,103,Sample Group Code - WIN SAMP CUSTODIANS,E,140
+WA,DWER,104,Sample Group Code - WIN SITE SAMPLE CUST,E,140
+WA,DWER,105,Sample Group Code - WIN SITE SAMPLE CUST,E,140
+WA,DWER,106,Sample Group Code - WIN SITE SAMPLE CUST,E,140
+WA,DWER,107,Sample Group Code - WIN SITE SAMPLE CUST,E,140
+WA,DWER,108,Sample Group Code - WIN INV CUSTODIANS,E,140
+WA,DWER,109,Sample Group Code - WIN INV CUSTODIANS,E,140
+WA,DWER,110,Sample Group Code - WIN INV CUSTODIANS,E,140
+WA,DWER,111,Sample Group Code - WIN INV CUSTODIANS,E,140
+WA,DWER,151,Below inlet,F,210
+WA,DWER,152,Not available,F,210
+WA,DWER,161,Unrated,E,140

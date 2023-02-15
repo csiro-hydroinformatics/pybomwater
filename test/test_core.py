@@ -1,11 +1,29 @@
 import unittest
+import types
 import requests
 import bom_water.bom_water as bm
 import os
+from pathlib import Path
 import shapely
 from bom_water.spatial_util import spatail_utilty
 
 class test_core(unittest.TestCase):
+
+    # def __init__(self):
+    #     super(test_core, self).__init__(self)
+    #     self.setUp()
+
+    @classmethod
+    def setUpClass(self):
+        remove_file = os.path.join(Path.home(), '/bom_water/cache/waterML_GetCapabilities.json')
+        if os.path.exists(remove_file):
+            os.remove(remove_file)
+
+    # def test_user_path(self):
+    #     from pathlib import Path
+    #     print(Path.home())
+
+
 
     def test_bom_service(self):
         '''Test that the service is up
@@ -56,6 +74,28 @@ class test_core(unittest.TestCase):
         else:
             assert False, "Test GetFeatureOfInterest falied"
 
+    def test_parse_get_data(self):
+        '''Test parsing time series'''
+        # Generate fictive response object
+        folder = Path(__file__).resolve().parent
+        with (folder / "response.xml").open("r") as fo:
+            resp_text = fo.read()
+        response = types.SimpleNamespace()
+        response.text = resp_text
+
+        _bm = bm.BomWater()
+        ts = _bm.parse_get_data(response)
+
+        assert ts.shape[1] == 3
+        assert ts.columns[0] == 'Value[cumec]'
+        assert (ts.Interpolation == "Continuous").all()
+
+        qual = ts.Quality.value_counts()
+        assert qual[90] == 1075
+        assert qual[10] == 295
+        assert qual[110] == 172
+
+
     def test_get_data_availability(self):
         '''Get Data availability test'''
         _bm = bm.BomWater()
@@ -70,3 +110,6 @@ class test_core(unittest.TestCase):
         response_json = _bom.xml_to_json(response.text)
         folder = f'C:\\Users\\fre171\\Documents\\pyBOMwater_dummyData\\test_stations.json'
         _bom.create_feature_list(response_json, folder )
+
+if __name__ == '__main__':
+    unittest.main()

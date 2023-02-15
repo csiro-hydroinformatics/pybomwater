@@ -1,7 +1,9 @@
 # BoM Water
 A python tool for requesting data from BoM Sensor Observation Service (SOS2, as WaterML 2.0 format)
 
-[![license](http://img.shields.io/badge/license-MIT-blue.svg)]() ![status](https://img.shields.io/badge/status-alpha-blue.svg) master: [![Build status - master]()]() devel: [![Build status - devel]()]()
+[![license](http://img.shields.io/badge/license-MIT-blue.svg)]() ![status](https://img.shields.io/badge/status-alpha-blue.svg) [![Build status - master](https://travis-ci.com/csiro-hydroinformatics/pybomwater.svg?branch=main)]()  ![pypi](https://img.shields.io/pypi/v/bomwater.svg?logo=python&logoColor=white) 
+[![codecov](https://codecov.io/gh/csiro-hydroinformatics/pybomwater/branch/main/graph/badge.svg?token=uj1VUQu7dT)](https://codecov.io/gh/csiro-hydroinformatics/pybomwater)
+
 
 This package has been developed to access to the BoM Water Data Sensor Observation Service (SOS). With a goal to easily and efficiently integrate data into scientific workflows  
 
@@ -19,6 +21,13 @@ From source:
 
 ## Usage
 see [Jupyter Notebook example](https://github.com/csiro-hydroinformatics/bomwater-notebook)
+
+---
+**NOTE**
+
+The first time a BomWater object is instantiated (bm = bom_water.BomWater()) a cache of data is created.  This process obtains data from the BoM service and will take a little while to complete.  Once cached this process is not repeated and performance will return to normal.
+
+---
 
 ## Documentation
 Bureau of Meteorology (BoM) documentation on using their SOS service is available at the following links:

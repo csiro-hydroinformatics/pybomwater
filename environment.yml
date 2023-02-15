@@ -7,9 +7,12 @@ dependencies:
   - requests
   - iso8601
   - pytz
-  - appdirs
+  # - appdirs
+  - json5
+  - xmltodict
+  - pandas
   - geojson
   - shapely
-  - pip
-  - pip:
-    - json
+  - pytest
+  - codecov
+  - pytest-cov
