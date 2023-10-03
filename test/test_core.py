@@ -7,6 +7,8 @@ from pathlib import Path
 import shapely
 from bom_water.spatial_util import spatail_utilty
 
+FTEST = Path(__file__).resolve().parent
+
 class test_core(unittest.TestCase):
 
     # def __init__(self):
@@ -15,9 +17,10 @@ class test_core(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        remove_file = os.path.join(Path.home(), '/bom_water/cache/waterML_GetCapabilities.json')
-        if os.path.exists(remove_file):
-            os.remove(remove_file)
+        remove_file = Path.home() / "bom_water" / "cache" / \
+                            "waterML_GetCapabilities.json"
+        if remove_file.exists():
+            remove_file.unlink()
 
     # def test_user_path(self):
     #     from pathlib import Path
@@ -77,8 +80,7 @@ class test_core(unittest.TestCase):
     def test_parse_get_data(self):
         '''Test parsing time series'''
         # Generate fictive response object
-        folder = Path(__file__).resolve().parent
-        with (folder / "response.xml").open("r") as fo:
+        with (FTEST / "test_data" / "response.xml").open("r") as fo:
             resp_text = fo.read()
         response = types.SimpleNamespace()
         response.text = resp_text
@@ -108,8 +110,9 @@ class test_core(unittest.TestCase):
         _bom = bm.BomWater()
         response = _bom.request(_bom.actions.GetFeatureOfInterest, None, None, None, None, None, "-37.505032 140.999283", "-28.157021 153.638824"  )
         response_json = _bom.xml_to_json(response.text)
-        folder = f'C:\\Users\\fre171\\Documents\\pyBOMwater_dummyData\\test_stations.json'
-        _bom.create_feature_list(response_json, folder )
+        fsta = FTEST / "test_data" / "test_station.json"
+        fsta.parent.mkdir(exist_ok=True)
+        _bom.create_feature_list(response_json, str(fsta) )
 
 if __name__ == '__main__':
     unittest.main()
