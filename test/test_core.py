@@ -102,10 +102,22 @@ class test_core(unittest.TestCase):
         '''Get Data availability test'''
         _bm = bm.BomWater()
 
+
     def test_get_observation(self):
         '''Get Observation test'''
         _bm = bm.BomWater()
+        t_begin = "2016-01-01T00:00:00+10"
+        t_end = "2019-12-31T00:00:00+10"
 
+        features = []
+        features.append(_bm.features.West_of_Dellapool)
+        features.append(_bm.features.LK_VIC)
+        prop = _bm.properties.Ground_Water_Level
+        proced = _bm.procedures.Pat9_C_B_1
+        df = _bm.get_observations(features, prop, proced, t_begin, t_end)
+        assert len(df) > 0, "No observational data found"
+
+   
     def test_create_feature_geojson_list(self):
         _bom = bm.BomWater()
         response = _bom.request(_bom.actions.GetFeatureOfInterest, None, None, None, None, None, "-37.505032 140.999283", "-28.157021 153.638824"  )

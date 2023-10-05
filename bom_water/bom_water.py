@@ -11,7 +11,6 @@ import xml.etree.ElementTree as ET
 from bom_water.spatial_util import spatail_utilty
 
 
-
 class Builder_Property():
     def __init__(self):
         pass
@@ -168,9 +167,17 @@ class BomWater():
 
         return temporal_filter + during + value_ref + t_period + begin_pos + end_pos + time_per_close + during_close + temp_filter_close
 
+    # def feature_of_interest(self, station_id):
+    #     return f"<sos:featureOfInterest>{station_id}</sos:featureOfInterest>"
     def feature_of_interest(self, station_id):
+        if type(station_id) is list:
+            feature_list = ''
+            for stat_id in station_id:
+                print(stat_id)
+                feature_list += f"<sos:featureOfInterest>{stat_id}</sos:featureOfInterest>"
+            return feature_list
         return f"<sos:featureOfInterest>{station_id}</sos:featureOfInterest>"
-
+    
     def observed_property(self, prop):
         return f"<sos:observedProperty>http://bom.gov.au/waterdata/services/parameters/{prop}</sos:observedProperty>"
 
@@ -211,13 +218,32 @@ class BomWater():
                                                                                           begin, end, lower_corner,
                                                                                           upper_corner) + self.envelope_tail()
 
-    def request(self, action, feature=None, prop=None, proced=None, begin=None, end=None, lower_corner=None,
-                upper_corner=None):
-        endpoint = f"http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
-        payload = self.build_payload(action, feature, prop, proced, begin, end, lower_corner, upper_corner)
-        if action == Action.GetCapabilities:
-            return requests.get(action)
-        return requests.post(endpoint, payload)
+    # def request(self, action, feature=None, prop=None, proced=None, begin=None, end=None, lower_corner=None,
+    #             upper_corner=None):
+    #     endpoint = f"http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
+    #     payload = self.build_payload(action, feature, prop, proced, begin, end, lower_corner, upper_corner)
+    #     if action == Action.GetCapabilities:
+    #         return requests.get(action)
+    #     return requests.post(endpoint, payload)
+
+    def request(self, action, feature=None, prop=None, proced=None, begin=None, end=None, lower_corner=None, upper_corner=None):
+        try:
+            endpoint = f"http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
+            payload = self.build_payload(action, feature, prop, proced, begin, end, lower_corner, upper_corner)
+            if action == Action.GetCapabilities:
+                response = requests.get(action)
+                if response.ok:
+                    return response
+                else:
+                    raise requests.exceptions.RequestException()
+            response = requests.post(endpoint, payload)
+            if response.ok:
+                return response
+            else:
+                raise requests.exceptions.RequestException() 
+        except requests.exceptions.RequestException as e:
+            raise e
+
 
     def _parse_float(self, x):
         if x is None:
@@ -277,6 +303,19 @@ class BomWater():
 
         return default_props
 
+    def get_observations(self, features, property, procedure, t_begin, t_end):
+        try:
+            response = self.request( self.actions.GetObservation, features,
+                                   property, procedure, t_begin, t_end)
+        except response.exceptions.RequestException as e:
+            assert False, f"Test GetObservation failed requestException: {e}"
+        dataframes = self.parse_get_data(response)
+        return dataframes
+        # dir_path = os.path.dirname(os.path.realpath(__file__))
+        # folder = os.path.join(dir_path, '..\\test_data\\')
+        # for df in dataframes:
+        #     _id = df.attrs['feature_id']
+        #     df.to_pickle(f'{folder}{_id}.pkl')
 
     def parse_get_data(self, response, raw=False):
         root = ET.fromstring(response.text)
