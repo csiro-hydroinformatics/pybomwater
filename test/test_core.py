@@ -17,10 +17,11 @@ class test_core(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        remove_file = Path.home() / "bom_water" / "cache" / \
-                            "waterML_GetCapabilities.json"
-        if remove_file.exists():
-            remove_file.unlink()
+        print('Dont do this for a moment')
+        # remove_file = Path.home() / "bom_water" / "cache" / \
+        #                     "waterML_GetCapabilities.json"
+        # if remove_file.exists():
+        #     remove_file.unlink()
 
     # def test_user_path(self):
     #     from pathlib import Path
@@ -117,6 +118,29 @@ class test_core(unittest.TestCase):
         df = _bm.get_observations(features, prop, proced, t_begin, t_end)
         assert len(df) > 0, "No observational data found"
 
+    def test_get_obs_diff(self):
+        '''Get Observation test'''
+        _bm = bm.BomWater()
+        t_begin = "2016-01-01T00:00:00+10"
+        t_end = "2019-12-31T00:00:00+10"
+
+        features = []
+        features.append(_bm.features.West_of_Dellapool)
+        features.append(_bm.features.LK_VIC)
+        
+        prop = _bm.properties.Ground_Water_Level
+        proced = _bm.procedures.Pat9_C_B_1
+        try:
+            response = _bm.request( _bm.actions.GetObservation, features,
+                                   prop, proced, t_begin, t_end)
+        except Exception as e:
+            assert False, f"Test GetObservation failed requestException: {e}"
+        df_1 = _bm.parse_get_data(response)
+        # df_2 = _bm.get_observations(features, prop, proced, t_begin, t_end)
+        for feature in features:
+            da_1 = df_1[feature]
+
+            assert df_1['values'].equals(df_2['values'])
    
     def test_create_feature_geojson_list(self):
         _bom = bm.BomWater()
@@ -125,6 +149,13 @@ class test_core(unittest.TestCase):
         fsta = FTEST / "test_data" / "test_station.json"
         fsta.parent.mkdir(exist_ok=True)
         _bom.create_feature_list(response_json, str(fsta) )
+
+    def test_list_features(self):
+        _bom = bm.BomWater()
+        all_features = _bom.features.__dict__
+        assert len(all_features) > 0, "Not features found"
+        for key in all_features:
+            print(f'Key: {key}, Value: {all_features[key]}')
 
 if __name__ == '__main__':
     unittest.main()

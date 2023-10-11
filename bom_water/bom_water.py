@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import pandas as pd
 import xml.etree.ElementTree as ET
+import xarray as xr
 from bom_water.spatial_util import spatail_utilty
 
 
@@ -246,11 +247,11 @@ class BomWater():
 
 
     def _parse_float(self, x):
-        if x is None:
-            return float('nan')
         try:
+            if x is None:
+                return float('nan')
             return float(x)
-        except ValueError:
+        except:
             return float('nan')
 
     def _parse_time(self, x):
@@ -309,50 +310,97 @@ class BomWater():
                                    property, procedure, t_begin, t_end)
         except response.exceptions.RequestException as e:
             assert False, f"Test GetObservation failed requestException: {e}"
-        dataframes = self.parse_get_data(response)
+        # dataframes = self.parse_get_data(response)
+        dataframes = self.parse_data(response)
         return dataframes
         # dir_path = os.path.dirname(os.path.realpath(__file__))
         # folder = os.path.join(dir_path, '..\\test_data\\')
         # for df in dataframes:
         #     _id = df.attrs['feature_id']
         #     df.to_pickle(f'{folder}{_id}.pkl')
-
+    def parse_node_attributes(self, node):
+        attribs = {}
+        for element in node[0].attrib:
+            attribs[element] = node[0].attrib[element]    
+        return attribs
+           
     def parse_get_data(self, response, raw=False):
         root = ET.fromstring(response.text)
 
         # Unit and default quality code
         prefix = './/{http://www.opengis.net/waterml/2.0}'
-        default_node = root.findall(f'{prefix}defaultPointMetadata')
-        default_properties = self._parse_default_node(default_node)
-        unit = default_properties["unit"]
-
+        sos_prefix = './/{http://www.opengis.net/sos/2.0}'
+        om_prefix = './/{http://www.opengis.net/om/2.0}'
+        xlink_prefix = '{http://www.w3.org/1999/xlink}'
         # Parse time series data
+        query_observationData = f'{sos_prefix}observationData'
         query_measurement = f'{prefix}MeasurementTVP'
+        q_prop = f'{om_prefix}observedProperty'
+        q_foi = f'{om_prefix}featureOfInterest'
+        q_proc = f'{om_prefix}procedure'
+        q_gen_date = f'{prefix}generationDate'
         data = []
-        qdefault = default_properties["quality_code"]
-        idefault = default_properties["interpolation"]
+        ds = {}
+        gen_date = root.findall(q_gen_date)[0].text
 
-        for e in root.findall(query_measurement):
-            info = [None, float('nan'), qdefault, idefault]
-            for node in e:
-                if node.tag.endswith("time"):
-                    info[0] = self._parse_time(node.text)
-                elif node.tag.endswith("value"):
-                    info[1] = self._parse_float(node.text)
-                elif node.tag.endswith("metadata"):
-                    qcodes = self._parse_quality_code(node, \
-                                        qdefault, idefault)
-                    info[2] = qcodes[0]
-                    info[3] = qcodes[1]
-            data.append(info)
+        for ob in root.findall(query_observationData):
+            #Observation Meta data
+            default_node = ob.findall(f'{prefix}defaultPointMetadata')
+            default_properties = self._parse_default_node(default_node)
+            unit = default_properties["unit"]
+            qdefault = default_properties["quality_code"]
+            idefault = default_properties["interpolation"]
 
-        if raw:
-            return data
+            proc_href = self.parse_node_attributes(ob.findall(q_proc))[f'{xlink_prefix}href']
+            prop_href = self.parse_node_attributes(ob.findall(q_prop))[f'{xlink_prefix}href']
+            foi_href = self.parse_node_attributes(ob.findall(q_foi))[f'{xlink_prefix}href']
+            proc_val = self.parse_node_attributes(ob.findall(q_proc))[f'{xlink_prefix}title']
+            prop_val = self.parse_node_attributes(ob.findall(q_prop))[f'{xlink_prefix}title']
+            foi_val = self.parse_node_attributes(ob.findall(q_foi))[f'{xlink_prefix}title']
+            #Measurement values and associated metadata
+            for e in ob.findall(query_measurement):
+                info = [None, float('nan'), qdefault, idefault]
+                for node in e:
+                    if node.tag.endswith("time"):
+                        info[0] = self._parse_time(node.text)
+                    elif node.tag.endswith("value"):
+                        info[1] = self._parse_float(node.text)
+                    elif node.tag.endswith("metadata"):
+                        qcodes = self._parse_quality_code(node, \
+                                            qdefault, idefault)
+                        info[2] = qcodes[0]
+                        info[3] = qcodes[1]
+                
+   
+                data.append(info)
 
-        df = pd.DataFrame(data, columns=('Timestamp[UTC]', f'Value[{unit}]', 'Quality', 'Interpolation'))
-        df = df.set_index('Timestamp[UTC]')
 
-        return df
+            pd_df = pd.DataFrame(data, columns=('Timestamp[UTC]', f'{prop_val} [{unit}]', 'Quality', 'Interpolation'))
+            pd_df.set_index = 'Timestamp[UTC]'
+            darray = pd_df.to_xarray()
+            description = f'Property: {prop_val} [{unit}], Procedure: {proc_val} for Feature: {foi_val}'
+            darray = darray.assign_attrs(
+                units=unit, 
+                description=description,
+                procedure = proc_val,
+                property = prop_val,
+                generated_date = f'{gen_date}',
+                station_no = f'{foi_href}', 
+                long_name=f'{foi_val}:{prop_val}', 
+                missing_data_value = 'nan')
+            
+
+            # darray = xr.DataArray(data, coords=[time, qual, interpol], dims=["time"], name=foi)
+            # darray = xr.DataArray(data, coords={'time':times , 'qual':qual , 'interpol':interpol}, name=foi)
+            # da = pd_df.to_xarray()
+        # if raw:
+        #     return data
+
+            # df = pd.DataFrame(data, columns=('Timestamp[UTC]', f'Value[{unit}]', 'Quality', 'Interpolation'))
+            # df = df.set_index('Timestamp[UTC]')
+            ds[f'{foi_href}'] = darray#xr.DataArray(pd_df, name=foi)
+ 
+        return ds
 
     def xml_to_json(self, xml_text):
         return dict(xmltodict.parse(xml_text))
@@ -403,3 +451,78 @@ class BomWater():
         # with open('stations.json', 'w') as fout:
         #     json.dump(feature_list, fout)
 
+    def find_all_keys(self, dictionary):
+        for key, value in dictionary.items():
+            if type(value) is dict:
+                yield key
+                yield from self.find_all_keys(value)
+            if type(value) is list:
+                yield key
+                yield from self.find_keys_in_list(value)
+            else:
+                yield key
+
+    def find_keys_in_list(self, list):
+        for item in list:
+            if type(item) is dict:
+                yield from self.find_all_keys(item)
+            if type(item) is list:
+                yield from self.find_keys_in_list(item)
+            else:
+                yield item
+
+    def find_keys(self, j_response):
+        dummy_item = "dummy"
+        keys = {dummy_item}
+        for key in self.find_all_keys(j_response):
+            if type(key) is dict:
+                k = key.keys()
+                for i in k:
+                    keys.add(i)
+            else:
+                keys.add(key)
+
+        keys.remove(dummy_item)
+        return keys
+
+    def parse_data(self, response):
+        json_response = self.xml_to_json(response.text)
+        df = []
+        neededKeys = []
+        keys = {"soap12:Envelope", "soap12:Body", "sos:GetObservationResponse", "sos:observationData", "om:OM_Observation", "om:result", "wml2:MeasurementTimeseries", "wml2:point"}
+       
+        if self.find_keys(json_response) >= keys:
+            print('Goodo')
+            data_list = json_response['soap12:Envelope']['soap12:Body']['sos:GetObservationResponse']['sos:observationData']
+            if type(data_list) is list:
+                for data_point in data_list:
+                    ts_data = data_point['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['wml2:point']
+                    self.get_data_values_as_dataframe(data_point, df, ts_data)
+            else:
+                ts_data = data_list['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['wml2:point']
+                self.get_data_values_as_dataframe(data_list, df, ts_data)
+        return df
+
+    def get_data_values_as_dataframe(self, data_point, df, ts_data):
+        time = []
+        values = []
+        for step in ts_data:
+            time.append(self._parse_time(step['wml2:MeasurementTVP']['wml2:time']))
+            values.append(self._parse_float(step['wml2:MeasurementTVP']['wml2:value']))
+        # ts = list(zip(time, values))
+        prop = data_point['om:OM_Observation']['om:observedProperty']['@xlink:title']
+        current_dataframe = pd.DataFrame(values, index=time, columns=[prop])
+        current_dataframe.attrs['meta_data'] = {}
+        self.create_meta_data(data_point, current_dataframe.attrs['meta_data'])
+        current_dataframe.attrs['feature_id'] = os.path.basename(
+            data_point['om:OM_Observation']['om:featureOfInterest']['@xlink:href'])
+        df.append(current_dataframe)
+
+    def create_meta_data(self, record_bundle, meta_data):
+        meta_data['om:phenomenonTime'] = record_bundle['om:OM_Observation']['om:phenomenonTime']
+        meta_data['om:resultTime'] = record_bundle['om:OM_Observation']['om:resultTime']
+        meta_data['om:procedure'] = record_bundle['om:OM_Observation']['om:procedure']
+        meta_data['om:observedProperty'] = record_bundle['om:OM_Observation']['om:observedProperty']
+        meta_data['om:featureOfInterest'] = record_bundle['om:OM_Observation']['om:featureOfInterest']
+        meta_data['@gml:id'] = record_bundle['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['@gml:id']
+        meta_data['wml2:defaultPointMetadata'] = record_bundle['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['wml2:defaultPointMetadata']
