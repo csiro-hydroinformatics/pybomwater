@@ -303,28 +303,60 @@ class BomWater():
                             default_props["unit"] = value
 
         return default_props
+    
+    def divide_chunks(self, l, n):
+        # looping till length l
+        for i in range(0, len(l), n):
+            yield l[i:i + n]
+   
+    def get_spatially_filtered_observations(self, features, spatial_path, bbox, property, procedure, t_begin, t_end):
+        #Get feature details based on bounding box
+        response = self.request(self.actions.GetFeatureOfInterest, features, property, procedure, t_begin, t_end, bbox[0], bbox[1]  )
+        response_json = self.xml_to_json(response.text)
+        feature_list = self.create_feature_list(response_json, None )
+        #Filter based on shape file
+        su = spatail_utilty()
+        mdb_sites = su.filter_feature_list(feature_list, spatial_path, None)
+        #Segment into chunks for requests
+        station_no = []
+        for site in mdb_sites['features']:
+            station_no.append(site['properties']['long_name'])
+        datasets = []
+        chunkes = 15
+        station_chunkes = list(self.divide_chunks(station_no, chunkes))
+
+        for chunk in station_chunkes:
+            response = self.request_observations( chunk, property=property, procedure=procedure, t_begin=t_begin, t_end=t_end, )
+            data = self.parse_data(response, mdb_sites)
+            datasets.append(data)
+
+        return datasets
 
     def get_observations(self, features, property, procedure, t_begin, t_end):
+        response = self.request(self.actions.GetFeatureOfInterest, features, property, procedure, t_begin, t_end, None, None  )
+        response_json = self.xml_to_json(response.text)
+        feature_list = self.create_feature_list(response_json, None )
+        response = self.request_observations(features, property, procedure, t_begin, t_end)
+
+        dataframes = self.parse_data(response, feature_list)
+        return dataframes
+
+    def request_observations(self, features, property, procedure, t_begin, t_end):
         try:
             response = self.request( self.actions.GetObservation, features,
                                    property, procedure, t_begin, t_end)
         except response.exceptions.RequestException as e:
             assert False, f"Test GetObservation failed requestException: {e}"
-        # dataframes = self.parse_get_data(response)
-        dataframes = self.parse_data(response)
-        return dataframes
-        # dir_path = os.path.dirname(os.path.realpath(__file__))
-        # folder = os.path.join(dir_path, '..\\test_data\\')
-        # for df in dataframes:
-        #     _id = df.attrs['feature_id']
-        #     df.to_pickle(f'{folder}{_id}.pkl')
+        return response
+
+
     def parse_node_attributes(self, node):
         attribs = {}
         for element in node[0].attrib:
             attribs[element] = node[0].attrib[element]    
         return attribs
            
-    def parse_get_data(self, response, raw=False):
+    def parse_data(self, response, stations=None):
         root = ET.fromstring(response.text)
 
         # Unit and default quality code
@@ -370,35 +402,29 @@ class BomWater():
                                             qdefault, idefault)
                         info[2] = qcodes[0]
                         info[3] = qcodes[1]
-                
-   
+  
                 data.append(info)
-
 
             pd_df = pd.DataFrame(data, columns=('Timestamp[UTC]', f'{prop_val} [{unit}]', 'Quality', 'Interpolation'))
             pd_df.set_index = 'Timestamp[UTC]'
             darray = pd_df.to_xarray()
             description = f'Property: {prop_val} [{unit}], Procedure: {proc_val} for Feature: {foi_val}'
+            if stations != None:
+                coordinates = spatail_utilty.find_station_coordinates_from(os.path.basename(foi_href), stations, None)
+            else:
+                coordinates = ''
             darray = darray.assign_attrs(
                 units=unit, 
                 description=description,
-                procedure = proc_val,
+                procedure = os.path.basename(proc_href),
                 property = prop_val,
                 generated_date = f'{gen_date}',
-                station_no = f'{foi_href}', 
+                station_no = f'{foi_href}',
+                coordinates = coordinates,
                 long_name=f'{foi_val}:{prop_val}', 
                 missing_data_value = 'nan')
             
-
-            # darray = xr.DataArray(data, coords=[time, qual, interpol], dims=["time"], name=foi)
-            # darray = xr.DataArray(data, coords={'time':times , 'qual':qual , 'interpol':interpol}, name=foi)
-            # da = pd_df.to_xarray()
-        # if raw:
-        #     return data
-
-            # df = pd.DataFrame(data, columns=('Timestamp[UTC]', f'Value[{unit}]', 'Quality', 'Interpolation'))
-            # df = df.set_index('Timestamp[UTC]')
-            ds[f'{foi_href}'] = darray#xr.DataArray(pd_df, name=foi)
+            ds[f'{foi_href}'] = darray
  
         return ds
 
@@ -426,103 +452,109 @@ class BomWater():
         lat = ''
         long = ''
         pos = ''
-        for feat in features:
-            long_station_no = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
-            if '#text' in feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']:
-                pos = feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']['#text']
-            else:
-                lat = ''
-                long = ''
-                pos = ''
-            if not pos == '':
-                lat = pos.split(' ')[0]
-                long = pos.split(' ')[1]
-
-            name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
-            station_no = os.path.basename(long_station_no)
-            stat = {'stationID': station_no, 'name': name, 'longName': long_station_no, 'coords': pos}
-            # feature_list.append(stat)
-            geojson_feature.append(su.create_geojson_feature(lat, long, station_no, None, name, long_station_no))
+        if len(features) > 1:
+            for feat in features:
+                self.extract_feature(su, geojson_feature, feat)
+        else:
+            self.extract_feature(su, geojson_feature, features)
         if not path == None:
             su.write_features(geojson_feature, path)
 
         return su.get_feature_collection(geojson_feature)
 
+    def extract_feature(self, su, geojson_feature, feat):
+        long_station_no = feat['wml2:MonitoringPoint']['gml:identifier']['#text']
+        if '#text' in feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']:
+            pos = feat['wml2:MonitoringPoint']['sams:shape']['gml:Point']['gml:pos']['#text']
+        else:
+            lat = ''
+            long = ''
+            pos = ''
+        if not pos == '':
+            lat = pos.split(' ')[0]
+            long = pos.split(' ')[1]
+
+        name = feat['wml2:MonitoringPoint']['gml:name'].replace(' ', '_').replace('-', '_')
+        station_no = os.path.basename(long_station_no)
+        stat = {'stationID': station_no, 'name': name, 'longName': long_station_no, 'coords': pos}
+            # feature_list.append(stat)
+        geojson_feature.append(su.create_geojson_feature(lat, long, station_no, None, name, long_station_no))
+
         # with open('stations.json', 'w') as fout:
         #     json.dump(feature_list, fout)
 
-    def find_all_keys(self, dictionary):
-        for key, value in dictionary.items():
-            if type(value) is dict:
-                yield key
-                yield from self.find_all_keys(value)
-            if type(value) is list:
-                yield key
-                yield from self.find_keys_in_list(value)
-            else:
-                yield key
+    # def find_all_keys(self, dictionary):
+    #     for key, value in dictionary.items():
+    #         if type(value) is dict:
+    #             yield key
+    #             yield from self.find_all_keys(value)
+    #         if type(value) is list:
+    #             yield key
+    #             yield from self.find_keys_in_list(value)
+    #         else:
+    #             yield key
 
-    def find_keys_in_list(self, list):
-        for item in list:
-            if type(item) is dict:
-                yield from self.find_all_keys(item)
-            if type(item) is list:
-                yield from self.find_keys_in_list(item)
-            else:
-                yield item
+    # def find_keys_in_list(self, list):
+    #     for item in list:
+    #         if type(item) is dict:
+    #             yield from self.find_all_keys(item)
+    #         if type(item) is list:
+    #             yield from self.find_keys_in_list(item)
+    #         else:
+    #             yield item
 
-    def find_keys(self, j_response):
-        dummy_item = "dummy"
-        keys = {dummy_item}
-        for key in self.find_all_keys(j_response):
-            if type(key) is dict:
-                k = key.keys()
-                for i in k:
-                    keys.add(i)
-            else:
-                keys.add(key)
+    # def find_keys(self, j_response):
+    #     dummy_item = "dummy"
+    #     keys = {dummy_item}
+    #     for key in self.find_all_keys(j_response):
+    #         if type(key) is dict:
+    #             k = key.keys()
+    #             for i in k:
+    #                 keys.add(i)
+    #         else:
+    #             keys.add(key)
 
-        keys.remove(dummy_item)
-        return keys
+    #     keys.remove(dummy_item)
+    #     return keys
 
-    def parse_data(self, response):
-        json_response = self.xml_to_json(response.text)
-        df = []
-        neededKeys = []
-        keys = {"soap12:Envelope", "soap12:Body", "sos:GetObservationResponse", "sos:observationData", "om:OM_Observation", "om:result", "wml2:MeasurementTimeseries", "wml2:point"}
+    # def parse_data(self, response):
+    #     json_response = self.xml_to_json(response.text)
+    #     df = []
+    #     neededKeys = []
+    #     keys = {"soap12:Envelope", "soap12:Body", "sos:GetObservationResponse", "sos:observationData", "om:OM_Observation", "om:result", "wml2:MeasurementTimeseries", "wml2:point"}
        
-        if self.find_keys(json_response) >= keys:
-            print('Goodo')
-            data_list = json_response['soap12:Envelope']['soap12:Body']['sos:GetObservationResponse']['sos:observationData']
-            if type(data_list) is list:
-                for data_point in data_list:
-                    ts_data = data_point['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['wml2:point']
-                    self.get_data_values_as_dataframe(data_point, df, ts_data)
-            else:
-                ts_data = data_list['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['wml2:point']
-                self.get_data_values_as_dataframe(data_list, df, ts_data)
-        return df
+    #     if self.find_keys(json_response) >= keys:
+    #         print('Goodo')
+    #         data_list = json_response['soap12:Envelope']['soap12:Body']['sos:GetObservationResponse']['sos:observationData']
+    #         if type(data_list) is list:
+    #             for data_point in data_list:
+    #                 ts_data = data_point['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['wml2:point']
+    #                 self.get_data_values_as_dataframe(data_point, df, ts_data)
+    #         else:
+    #             ts_data = data_list['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['wml2:point']
+    #             self.get_data_values_as_dataframe(data_list, df, ts_data)
+    #     return df
 
-    def get_data_values_as_dataframe(self, data_point, df, ts_data):
-        time = []
-        values = []
-        for step in ts_data:
-            time.append(self._parse_time(step['wml2:MeasurementTVP']['wml2:time']))
-            values.append(self._parse_float(step['wml2:MeasurementTVP']['wml2:value']))
-        # ts = list(zip(time, values))
-        prop = data_point['om:OM_Observation']['om:observedProperty']['@xlink:title']
-        current_dataframe = pd.DataFrame(values, index=time, columns=[prop])
-        current_dataframe.attrs['meta_data'] = {}
-        self.create_meta_data(data_point, current_dataframe.attrs['meta_data'])
-        current_dataframe.attrs['feature_id'] = os.path.basename(
-            data_point['om:OM_Observation']['om:featureOfInterest']['@xlink:href'])
-        df.append(current_dataframe)
+    # def get_data_values_as_dataframe(self, data_point, df, ts_data):
+    #     time = []
+    #     values = []
+    #     for step in ts_data:
+    #         time.append(self._parse_time(step['wml2:MeasurementTVP']['wml2:time']))
+    #         values.append(self._parse_float(step['wml2:MeasurementTVP']['wml2:value']))
+    #     # ts = list(zip(time, values))
+    #     prop = data_point['om:OM_Observation']['om:observedProperty']['@xlink:title']
+    #     current_dataframe = pd.DataFrame(values, index=time, columns=[prop])
+    #     current_dataframe.attrs['meta_data'] = {}
+    #     self.create_meta_data(data_point, current_dataframe.attrs['meta_data'])
+    #     current_dataframe.attrs['feature_id'] = os.path.basename(
+    #         data_point['om:OM_Observation']['om:featureOfInterest']['@xlink:href'])
+    #     df.append(current_dataframe)
 
-    def create_meta_data(self, record_bundle, meta_data):
-        meta_data['om:phenomenonTime'] = record_bundle['om:OM_Observation']['om:phenomenonTime']
-        meta_data['om:resultTime'] = record_bundle['om:OM_Observation']['om:resultTime']
-        meta_data['om:procedure'] = record_bundle['om:OM_Observation']['om:procedure']
-        meta_data['om:observedProperty'] = record_bundle['om:OM_Observation']['om:observedProperty']
-        meta_data['om:featureOfInterest'] = record_bundle['om:OM_Observation']['om:featureOfInterest']
-        meta_data['@gml:id'] = record_bundle['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['@gml:id']
-        meta_data['wml2:defaultPointMetadata'] = record_bundle['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['wml2:defaultPointMetadata']
+    # def create_meta_data(self, record_bundle, meta_data):
+    #     meta_data['om:phenomenonTime'] = record_bundle['om:OM_Observation']['om:phenomenonTime']
+    #     meta_data['om:resultTime'] = record_bundle['om:OM_Observation']['om:resultTime']
+    #     meta_data['om:procedure'] = record_bundle['om:OM_Observation']['om:procedure']
+    #     meta_data['om:observedProperty'] = record_bundle['om:OM_Observation']['om:observedProperty']
+    #     meta_data['om:featureOfInterest'] = record_bundle['om:OM_Observation']['om:featureOfInterest']
+    #     meta_data['@gml:id'] = record_bundle['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['@gml:id']
+    #     meta_data['wml2:defaultPointMetadata'] = record_bundle['om:OM_Observation']['om:result']['wml2:MeasurementTimeseries']['wml2:defaultPointMetadata']
