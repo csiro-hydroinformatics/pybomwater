@@ -9,7 +9,7 @@ import re
 import pandas as pd
 import xml.etree.ElementTree as ET
 import xarray as xr
-from bom_water.spatial_util import spatail_utilty
+from pybomwater.spatial_util import spatail_utilty
 
 
 class Builder_Property():
@@ -58,7 +58,7 @@ class BomWater():
         self.properties = Property()
         self.procedures = Procedure()
 
-        self.cache = os.path.join(str(os.path.expanduser("~")), 'bom_water', 'cache')
+        self.cache = os.path.join(str(os.path.expanduser("~")), 'pybomwater', 'cache')
         self.waterML_GetCapabilities = os.path.join(self.cache, 'waterML_GetCapabilities.json')
         self.stations = os.path.join(self.cache, 'stations.json')
         self.check_cache_status()#This should move to user space not be in module space

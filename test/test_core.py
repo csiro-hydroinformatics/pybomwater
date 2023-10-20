@@ -3,10 +3,10 @@ import unittest
 import types
 import pytest
 import requests
-import bom_water.bom_water as bm
+import pybomwater.bom_water as bm
 import os
 from pathlib import Path
-from bom_water.spatial_util import spatail_utilty
+from pybomwater.spatial_util import spatail_utilty
 from geojson import Feature, FeatureCollection, Point
 import json
 import xarray as xr
