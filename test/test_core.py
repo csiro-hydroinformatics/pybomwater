@@ -1,11 +1,16 @@
+import json
 import unittest
 import types
+import pytest
 import requests
-import bom_water.bom_water as bm
+import pybomwater.bom_water as bm
 import os
 from pathlib import Path
+from pybomwater.spatial_util import spatail_utilty
+from geojson import Feature, FeatureCollection, Point
+import json
+import xarray as xr
 import shapely
-from bom_water.spatial_util import spatail_utilty
 
 FTEST = Path(__file__).resolve().parent
 
@@ -17,10 +22,11 @@ class test_core(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        remove_file = Path.home() / "bom_water" / "cache" / \
-                            "waterML_GetCapabilities.json"
-        if remove_file.exists():
-            remove_file.unlink()
+        print('Dont do this for a moment')
+        # remove_file = Path.home() / "bom_water" / "cache" / \
+        #                     "waterML_GetCapabilities.json"
+        # if remove_file.exists():
+        #     remove_file.unlink()
 
     # def test_user_path(self):
     #     from pathlib import Path
@@ -86,13 +92,14 @@ class test_core(unittest.TestCase):
         response.text = resp_text
 
         _bm = bm.BomWater()
-        ts = _bm.parse_get_data(response)
+        result = _bm.parse_data(response)
+        ts = result['http://bom.gov.au/waterdata/services/stations/915011A']
 
-        assert ts.shape[1] == 3
-        assert ts.columns[0] == 'Value[cumec]'
-        assert (ts.Interpolation == "Continuous").all()
+        # assert ts.shape[1] == 3
+        assert ts.data_vars.__contains__('Water Course Discharge [cumec]'), "Values not found"
+        assert (ts.Interpolation == "Continuous").all(), "Interpolation not continuous"
 
-        qual = ts.Quality.value_counts()
+        qual = xr.CFTimeIndex.value_counts(ts.Quality)
         assert qual[90] == 1075
         assert qual[10] == 295
         assert qual[110] == 172
@@ -116,8 +123,9 @@ class test_core(unittest.TestCase):
         proced = _bm.procedures.Pat9_C_B_1
         df = _bm.get_observations(features, prop, proced, t_begin, t_end)
         assert len(df) > 0, "No observational data found"
+        assert df[_bm.features.West_of_Dellapool].property == prop
+        assert df[_bm.features.LK_VIC].procedure == proced
 
-   
     def test_create_feature_geojson_list(self):
         _bom = bm.BomWater()
         response = _bom.request(_bom.actions.GetFeatureOfInterest, None, None, None, None, None, "-37.505032 140.999283", "-28.157021 153.638824"  )
@@ -125,6 +133,130 @@ class test_core(unittest.TestCase):
         fsta = FTEST / "test_data" / "test_station.json"
         fsta.parent.mkdir(exist_ok=True)
         _bom.create_feature_list(response_json, str(fsta) )
+
+    def test_list_features(self):
+        _bom = bm.BomWater()
+        all_features = _bom.features.__dict__
+        assert len(all_features) > 0, "Not features found"
+        for key in all_features:
+            print(f'Key: {key}, Value: {all_features[key]}')
+
+
+    def test_get_features_of_interest(self):
+        _bm = bm.BomWater()
+        procedure = _bm.procedures.Pat1_C_B_1_DailyMean
+        prop = _bm.properties.Water_Temperature
+        features = []
+        features.append(_bm.features.Long_Gully_at_Philip)
+        features.append(_bm.features.Loveday_Disposal_Basin_at_Cobdogla_Swamp)
+        response = _bm.request(_bm.actions.GetFeatureOfInterest, features, None, None, None, None, None, None  )
+        response_json = _bm.xml_to_json(response.text)
+        '''bomwater creates a FeatureCollection which can be used for mapping'''
+        feature_list = _bm.create_feature_list(response_json, None )
+        su = spatail_utilty()
+        mdb_sites = su.filter_feature_list(feature_list, './test/test_data/Spatial/mdb_buffer_1km.shp', False)
+
+        for site in mdb_sites['features']:
+            if features.__contains__(site['properties']['long_name']):
+                assert True
+            else:
+                assert False, "Feature not found"
+
+    def divide_chunks(self, l, n):
+        # looping till length l
+        for i in range(0, len(l), n):
+            yield l[i:i + n]
+
+    def test_coords(self):
+        low_left_lat =  -35.413204
+        low_left_long = 149.047814
+        upper_right_lat = -35.406226
+        upper_right_long = 149.064809
+
+        lower_left_coords = f'{low_left_lat} {low_left_long}'
+        upper_right_coords = f'{upper_right_lat} {upper_right_long}'
+        coords = tuple((lower_left_coords, upper_right_coords))
+        assert coords[0] == lower_left_coords
+        assert coords[1] == upper_right_coords
+    
+    def test_filtered_get_observations(self):
+        _bm = bm.BomWater()
+        procedure = _bm.procedures.Pat1_C_B_1_DailyMean
+        prop = _bm.properties.Water_Temperature
+        #Single gauge 
+        stationNo = "410779"
+        coordinates = [ 149.057806, -35.406972]
+
+        low_left_lat =  -35.413204
+        low_left_long = 149.047814
+        upper_right_lat = -35.406226
+        upper_right_long = 149.064809
+        #Whole of the MDB
+        # low_left_lat = -37.505032
+        # low_left_long = 138.00
+        # upper_right_lat = -24.00
+        # upper_right_long = 154.00
+
+        lower_left_coords = f'{low_left_lat} {low_left_long}'
+        upper_right_coords = f'{upper_right_lat} {upper_right_long}'
+        coords = tuple((lower_left_coords, upper_right_coords))
+
+        t_begin = "1800-01-01T00:00:00+10"
+        t_end = "2030-12-31T00:00:00+10"
+
+        spatial_path = './test/test_data/Spatial/mdb_buffer_1km.shp'
+        results = _bm.get_spatially_filtered_observations( None, spatial_path, coords, prop, procedure, t_begin, t_end)
+        
+        # This test can be used on a local machine for writing to disk
+        #a_path = ''
+        # for r in results:
+        #     paths = []
+        #     for set in r:
+        #         base_path = f'./test/test_data/mdb_water_temp'
+        #         file_name = f'{os.path.basename(set)}.nc'
+        #         paths.append(os.path.join(base_path, file_name))
+        #     a_path = paths[0]
+        #     xr.save_mfdataset(r.values(), paths, mode='w', format="NETCDF4", groups=None, engine=None, compute=True )
+
+        data = results[0]['http://bom.gov.au/waterdata/services/stations/410779']#xr.open_dataset(a_path)
+        #Correct coordinates and station found
+        assert all([a == b for a, b in zip(data.coordinates, coordinates)]), "Not expected coordinates"
+        assert stationNo == os.path.basename(data.station_no), "Not expected station"
+
+    def load_nc_file(self):
+        path = './test/test_data/mdb_water_temp/GW273183.1.1.nc'
+        data = xr.open_dataset(path)
+        assert data != None
+
+    def test_list_bomWater_metadata(self):
+        #Use this is debug mode to obtain print statements in the Debug console
+        # _bm = bm.BomWater()
+        # print(_bm.actions.__dict__)
+        # print(_bm.properties.__dict__)
+        # print(_bm.procedures.__dict__)
+        # print(_bm.feature_of_interest.__dict__)
+        # self.write_json_features(_bm.feature_of_interest.__dict__, './test_data/features.json')
+        assert True
+
+    def test_load_json_stations(self):
+        # {'geometry': {'coordinates': [149.315944, -33.956499], 'type': 'Point'}, 'properties': {'long_name': 'http://bom.gov.au/waterdata/services/stations/41200209', 'name': 'ABERCROMBIE_@_ABER#2', 'stationId': None, 'stationNo': '41200209'}, 'type': 'Feature'}
+        result = [149.057806, -35.406972]
+        target = '410779'
+        answer = spatail_utilty.find_station_coordinates_from(target, None, './test/test_data/mdb_Watertemp_stations.json')
+        assert answer == result, 'Incorrect find'
+
+        with open('./test/test_data/mdb_Watertemp_stations.json') as json_file:
+            stations =  json.load(json_file)
+        answer = spatail_utilty.find_station_coordinates_from(target, stations, None)
+        assert answer == result, 'Incorrect find'
+
+        target = '410779'
+        with pytest.raises(Exception):
+            answer = spatail_utilty.find_station_coordinates_from(target, None, None)
+
+        target = 'not_in_list'
+        with pytest.raises(Exception):
+            answer = spatail_utilty.find_station_coordinates_from(target, stations=stations, path=None)
 
 if __name__ == '__main__':
     unittest.main()
