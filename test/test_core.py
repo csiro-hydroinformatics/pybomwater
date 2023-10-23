@@ -206,17 +206,19 @@ class test_core(unittest.TestCase):
 
         spatial_path = './test/test_data/Spatial/mdb_buffer_1km.shp'
         results = _bm.get_spatially_filtered_observations( None, spatial_path, coords, prop, procedure, t_begin, t_end)
-        a_path = ''
-        for r in results:
-            paths = []
-            for set in r:
-                base_path = f'./test/test_data/mdb_water_temp'
-                file_name = f'{os.path.basename(set)}.nc'
-                paths.append(os.path.join(base_path, file_name))
-            a_path = paths[0]
-            xr.save_mfdataset(r.values(), paths, mode='w', format="NETCDF4", groups=None, engine=None, compute=True )
+        
+        # This test can be used on a local machine for writing to disk
+        #a_path = ''
+        # for r in results:
+        #     paths = []
+        #     for set in r:
+        #         base_path = f'./test/test_data/mdb_water_temp'
+        #         file_name = f'{os.path.basename(set)}.nc'
+        #         paths.append(os.path.join(base_path, file_name))
+        #     a_path = paths[0]
+        #     xr.save_mfdataset(r.values(), paths, mode='w', format="NETCDF4", groups=None, engine=None, compute=True )
 
-        data = xr.open_dataset(a_path)
+        data = results[0]['http://bom.gov.au/waterdata/services/stations/410779']#xr.open_dataset(a_path)
         #Correct coordinates and station found
         assert all([a == b for a, b in zip(data.coordinates, coordinates)]), "Not expected coordinates"
         assert stationNo == os.path.basename(data.station_no), "Not expected station"
