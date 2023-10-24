@@ -11,6 +11,7 @@ from geojson import Feature, FeatureCollection, Point
 import json
 import xarray as xr
 import shapely
+import numpy as np
 
 FTEST = Path(__file__).resolve().parent
 
@@ -98,6 +99,7 @@ class test_core(unittest.TestCase):
         # assert ts.shape[1] == 3
         assert ts.data_vars.__contains__('Water Course Discharge [cumec]'), "Values not found"
         assert (ts.Interpolation == "Continuous").all(), "Interpolation not continuous"
+        assert len(ts.dims) == 1
 
         qual = xr.CFTimeIndex.value_counts(ts.Quality)
         assert qual[90] == 1075
@@ -121,10 +123,42 @@ class test_core(unittest.TestCase):
         features.append(_bm.features.LK_VIC)
         prop = _bm.properties.Ground_Water_Level
         proced = _bm.procedures.Pat9_C_B_1
+        
         df = _bm.get_observations(features, prop, proced, t_begin, t_end)
         assert len(df) > 0, "No observational data found"
         assert df[_bm.features.West_of_Dellapool].property == prop
         assert df[_bm.features.LK_VIC].procedure == proced
+
+
+    def test_get_observation_check_daily(self):
+        '''Get Observation test'''
+        _bm = bm.BomWater()
+        t_begin = "1800-01-01T00:00:00+10"
+        t_end = "2030-12-31T00:00:00+10"
+
+        features = []
+        f= _bm.features.MOWAMBA___LYNWOOD#'http://bom.gov.au/waterdata/services/stations/222027'
+        features.append(f)
+
+        prop = _bm.properties.Water_Temperature
+        proced = _bm.procedures.Pat1_C_B_1_DailyMean
+        df = _bm.get_observations(features, prop, proced, t_begin, t_end)
+        da = df[f]
+        assert len(df) > 0, "No observational data found"
+        assert da.property == prop
+        assert da.procedure == proced
+        assert len(np.unique(da.time)) == len(da.time), 'Multiple values for daily data, there should be unique daily values!'
+
+        #test slicing
+        t_begin = "2002-01-20"
+        t_end = "2002-01-26"
+        one_week = da.sel(time=slice(t_begin, t_end))
+        df_week = _bm.get_observations(features, prop, proced, f'{t_begin}T00:00:00+10', f'{t_end}T00:00:00+10')
+        da_week = df_week[f]
+        assert one_week == da_week
+
+        # data = xr.open_dataset('./test/test_data/mdb_water_temp/222027.nc')
+        # assert data.equals( df['http://bom.gov.au/waterdata/services/stations/222027'])
 
     def test_create_feature_geojson_list(self):
         _bom = bm.BomWater()
@@ -222,9 +256,11 @@ class test_core(unittest.TestCase):
         #Correct coordinates and station found
         assert all([a == b for a, b in zip(data.coordinates, coordinates)]), "Not expected coordinates"
         assert stationNo == os.path.basename(data.station_no), "Not expected station"
+        assert len(data.dims) == 1
 
-    def load_nc_file(self):
-        path = './test/test_data/mdb_water_temp/GW273183.1.1.nc'
+
+    def test_load_nc_file(self):
+        path = './test/test_data/mdb_water_temp/222027.nc'
         data = xr.open_dataset(path)
         assert data != None
 

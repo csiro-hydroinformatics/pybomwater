@@ -404,16 +404,16 @@ class BomWater():
                         info[3] = qcodes[1]
   
                 data.append(info)
-
-            pd_df = pd.DataFrame(data, columns=('Timestamp[UTC]', f'{prop_val} [{unit}]', 'Quality', 'Interpolation'))
-            pd_df.set_index = 'Timestamp[UTC]'
-            darray = pd_df.to_xarray()
+            values_name = f'{prop_val} [{unit}]'
+            pd_df = pd.DataFrame(data, columns=('time', values_name, 'Quality', 'Interpolation'))
+            pd_df = pd_df.set_index('time')
+            da = pd_df.to_xarray()
             description = f'Property: {prop_val} [{unit}], Procedure: {proc_val} for Feature: {foi_val}'
             if stations != None:
                 coordinates = spatail_utilty.find_station_coordinates_from(os.path.basename(foi_href), stations, None)
             else:
                 coordinates = ''
-            darray = darray.assign_attrs(
+            da = da.assign_attrs(
                 units=unit, 
                 description=description,
                 procedure = os.path.basename(proc_href),
@@ -423,8 +423,8 @@ class BomWater():
                 coordinates = coordinates,
                 long_name=f'{foi_val}:{prop_val}', 
                 missing_data_value = 'nan')
-            
-            ds[f'{foi_href}'] = darray
+
+            ds[f'{foi_href}'] = da
  
         return ds
 
