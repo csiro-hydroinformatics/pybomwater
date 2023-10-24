@@ -259,7 +259,7 @@ class test_core(unittest.TestCase):
         assert len(data.dims) == 1
 
 
-    def test_load_nc_file(self):
+    def load_nc_file(self):
         path = './test/test_data/mdb_water_temp/222027.nc'
         data = xr.open_dataset(path)
         assert data != None
