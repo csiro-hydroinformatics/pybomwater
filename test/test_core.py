@@ -110,7 +110,18 @@ class test_core(unittest.TestCase):
     def test_get_data_availability(self):
         '''Get Data availability test'''
         _bm = bm.BomWater()
+        t_begin = "1930-01-01T00:00:00+10"
+        t_end = "2024-12-31T00:00:00+10"
 
+        features = []
+        features.append('http://bom.gov.au/waterdata/services/stations/410061')
+        procedure = _bm.procedures.Pat4_C_B_1_DailyMean
+        prop = _bm.properties.Water_Course_Discharge
+
+        response = _bm.request(_bm.actions.GetDataAvailability, features, prop=None, proced=None, begin=t_begin, end=t_end, lower_corner=None, upper_corner=None)
+        #This needs a parser
+        print(response.text)
+        assert response.status_code == 200
 
     def test_get_observation(self):
         '''Get Observation test'''
@@ -123,12 +134,12 @@ class test_core(unittest.TestCase):
         features.append(_bm.features.LK_VIC)
         prop = _bm.properties.Ground_Water_Level
         proced = _bm.procedures.Pat9_C_B_1
-        
-        df = _bm.get_observations(features, prop, proced, t_begin, t_end)
-        assert len(df) > 0, "No observational data found"
-        assert df[_bm.features.West_of_Dellapool].property == prop
-        assert df[_bm.features.LK_VIC].procedure == proced
-
+        bbox = [None, None]
+        results = _bm.get_observations(features, prop, proced, t_begin, t_end, bbox)
+        for result in results:
+            assert len(result) > 0, "No observational data found"
+            assert result[_bm.features.West_of_Dellapool].property == prop
+            assert result[_bm.features.LK_VIC].procedure == proced
 
     def test_get_observation_check_daily(self):
         '''Get Observation test'''
@@ -142,19 +153,21 @@ class test_core(unittest.TestCase):
 
         prop = _bm.properties.Water_Temperature
         proced = _bm.procedures.Pat1_C_B_1_DailyMean
-        df = _bm.get_observations(features, prop, proced, t_begin, t_end)
-        da = df[f]
-        assert len(df) > 0, "No observational data found"
-        assert da.property == prop
-        assert da.procedure == proced
-        assert len(np.unique(da.time)) == len(da.time), 'Multiple values for daily data, there should be unique daily values!'
+        bbox = [None,None]
+        results = _bm.get_observations(features, prop, proced, t_begin, t_end, bbox=bbox)
+        for result in results:
+            da = result[f]
+            assert len(results) > 0, "No observational data found"
+            assert da.property == prop
+            assert da.procedure == proced
+            assert len(np.unique(da.time)) == len(da.time), 'Multiple values for daily data, there should be unique daily values!'
 
         #test slicing
         t_begin = "2002-01-20"
         t_end = "2002-01-26"
         one_week = da.sel(time=slice(t_begin, t_end))
-        df_week = _bm.get_observations(features, prop, proced, f'{t_begin}T00:00:00+10', f'{t_end}T00:00:00+10')
-        da_week = df_week[f]
+        df_week = _bm.get_observations(features, prop, proced, f'{t_begin}T00:00:00+10', f'{t_end}T00:00:00+10', bbox)
+        da_week = df_week[0][f]
         assert one_week == da_week
 
         # data = xr.open_dataset('./test/test_data/mdb_water_temp/222027.nc')
@@ -213,6 +226,60 @@ class test_core(unittest.TestCase):
         assert coords[0] == lower_left_coords
         assert coords[1] == upper_right_coords
     
+
+    def test_duplicate_dates(self):
+        _bm = bm.BomWater()
+        procedure = _bm.procedures.Pat4_C_B_1_DailyMean
+        prop = _bm.properties.Water_Course_Discharge
+        low_left_lat = -37.505032
+        low_left_long = 138.00
+        upper_right_lat = -24.00
+        upper_right_long = 154.00
+
+        lower_left_coords = f'{low_left_lat} {low_left_long}'
+        upper_right_coords = f'{upper_right_lat} {upper_right_long}'
+        coords = tuple((lower_left_coords, upper_right_coords))
+        t_begin = "1920-01-01T00:00:00+10"
+        t_end = "2024-12-31T00:00:00+10"
+
+        spatial_path = './test/test_data/Spatial/test_filter_layer.shp'#os.path.join(spatial_test_data_path, 'mdb_buffer_1km.shp')
+        results = _bm.get_spatially_filtered_observations( None, spatial_path, coords, prop, procedure, t_begin, t_end)
+        for r in results:
+            for d in r:
+                assert f'{len(np.unique(r[d].time)) == len(r[d].time)} {d}', f'Station: {d} does not have unique daily values, { xr.CFTimeIndex.value_counts(r[d].time)}'
+
+    def test_single_feature_obs(self):
+        '''Get Observation test'''
+        _bm = bm.BomWater()
+        t_begin = "1930-01-01T00:00:00+10"
+        t_end = "2024-12-31T00:00:00+10"
+
+        features = []
+        features.append('http://bom.gov.au/waterdata/services/stations/410061')
+        features.append('http://bom.gov.au/waterdata/services/stations/410733')
+        features.append('http://bom.gov.au/waterdata/services/stations/410071')
+        features.append('http://bom.gov.au/waterdata/services/stations/410700')
+        features.append('http://bom.gov.au/waterdata/services/stations/410747')
+        features.append('http://bom.gov.au/waterdata/services/stations/410752')
+        features.append('http://bom.gov.au/waterdata/services/stations/410070')
+        features.append('http://bom.gov.au/waterdata/services/stations/410750')
+        features.append('http://bom.gov.au/waterdata/services/stations/410719')
+        features.append('http://bom.gov.au/waterdata/services/stations/410038')
+        features.append('http://bom.gov.au/waterdata/services/stations/410061')
+        features.append('http://bom.gov.au/waterdata/services/stations/41000269')
+
+        procedure = _bm.procedures.Pat4_C_B_1_DailyMean
+        prop = _bm.properties.Water_Course_Discharge
+        bbox = [None, None]
+        results = _bm.get_observations(features, prop, procedure, t_begin, t_end, bbox)
+        for r in results:
+            for station in r:
+                da = r[station]
+                assert len(da) > 0, "No observational data found"
+                assert da.property == prop, f'Station: {station} properties are incorrect'
+                assert len(np.unique(da.time)) == len(da.time), f'Station: {station} does not have unique daily values, { xr.CFTimeIndex.value_counts(da.time)}'
+
+
     def test_filtered_get_observations(self):
         _bm = bm.BomWater()
         procedure = _bm.procedures.Pat1_C_B_1_DailyMean
@@ -220,7 +287,7 @@ class test_core(unittest.TestCase):
         #Single gauge 
         stationNo = "410779"
         coordinates = [ 149.057806, -35.406972]
-
+        #Bounding for single station
         low_left_lat =  -35.413204
         low_left_long = 149.047814
         upper_right_lat = -35.406226
@@ -235,10 +302,10 @@ class test_core(unittest.TestCase):
         upper_right_coords = f'{upper_right_lat} {upper_right_long}'
         coords = tuple((lower_left_coords, upper_right_coords))
 
-        t_begin = "1800-01-01T00:00:00+10"
-        t_end = "2030-12-31T00:00:00+10"
+        t_begin = "1930-01-01T00:00:00+10"
+        t_end = "2024-12-31T00:00:00+10"
 
-        spatial_path = './test/test_data/Spatial/mdb_buffer_1km.shp'
+        spatial_path = './test/test_data/Spatial/test_filter_layer.shp'#./test/test_data/Spatial/mdb_buffer_1km.shp'
         results = _bm.get_spatially_filtered_observations( None, spatial_path, coords, prop, procedure, t_begin, t_end)
         
         # This test can be used on a local machine for writing to disk

@@ -10,6 +10,9 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 import xarray as xr
 from pybomwater.spatial_util import spatail_utilty
+import math
+import random
+from statistics import mean
 
 
 class Builder_Property():
@@ -241,7 +244,8 @@ class BomWater():
             if response.ok:
                 return response
             else:
-                raise requests.exceptions.RequestException() 
+                res_content = response.content
+                raise requests.exceptions.RequestException(request=requests, response=response) 
         except requests.exceptions.RequestException as e:
             raise e
 
@@ -309,6 +313,24 @@ class BomWater():
         for i in range(0, len(l), n):
             yield l[i:i + n]
    
+
+    def define_request_chunking_size(self, features, property, procedure, start_date, end_date ):
+        request_values_limit = 500000
+        size = 2
+        feat_count = len(features)
+
+        if feat_count > size:
+            sample_indexes = random.sample(range(0, feat_count), max(2,math.floor(feat_count*0.05)))
+            sample_sizes = []
+            for s_indx in sample_indexes:
+                feature = features[s_indx]
+                response = self.request_observations( feature, property=property, procedure=procedure, t_begin=start_date, t_end=end_date)
+                values_count = self.values_count(response)
+                # size = request_values_limit/(values_count)#*len(features)
+                sample_sizes.append(values_count)
+            return math.floor(request_values_limit/max(sample_sizes)*0.9)
+        return size
+    
     def get_spatially_filtered_observations(self, features, spatial_path, bbox, property, procedure, t_begin, t_end):
         #Get feature details based on bounding box
         response = self.request(self.actions.GetFeatureOfInterest, features, property, procedure, t_begin, t_end, bbox[0], bbox[1]  )
@@ -316,37 +338,60 @@ class BomWater():
         feature_list = self.create_feature_list(response_json, None )
         #Filter based on shape file
         su = spatail_utilty()
-        mdb_sites = su.filter_feature_list(feature_list, spatial_path, None)
+        filtered_features = su.filter_feature_list(feature_list, spatial_path, None)
         #Segment into chunks for requests
+
+        return self.batch_request_observations(property, procedure, t_begin, t_end, filtered_features)
+
+    def batch_request_observations(self, property, procedure, t_begin, t_end, filtered_features):
         station_no = []
-        for site in mdb_sites['features']:
+        for site in filtered_features['features']:
             station_no.append(site['properties']['long_name'])
         datasets = []
-        chunkes = 15
-        station_chunkes = list(self.divide_chunks(station_no, chunkes))
+        chunk_size = self.define_request_chunking_size( station_no, property, procedure, t_begin, t_end )
+        station_chunkes = list(self.divide_chunks(station_no, chunk_size))
 
         for chunk in station_chunkes:
             response = self.request_observations( chunk, property=property, procedure=procedure, t_begin=t_begin, t_end=t_end, )
-            data = self.parse_data(response, mdb_sites)
+            data = self.parse_data(response, filtered_features)
             datasets.append(data)
 
         return datasets
 
-    def get_observations(self, features, property, procedure, t_begin, t_end):
-        response = self.request(self.actions.GetFeatureOfInterest, features, property, procedure, t_begin, t_end, None, None  )
+    def get_observations(self, features, property, procedure, t_begin, t_end, bbox):
+        response = self.request(self.actions.GetFeatureOfInterest, features, property, procedure, t_begin, t_end, bbox[0], bbox[1]  )
         response_json = self.xml_to_json(response.text)
         feature_list = self.create_feature_list(response_json, None )
-        response = self.request_observations(features, property, procedure, t_begin, t_end)
+        # station_no = []
+        # for site in feature_list['features']:
+        #     station_no.append(site['properties']['long_name'])
+        # datasets = []
+        # chunkes = self.define_request_chunking_size( features, property, procedure, t_begin, t_end )
+        # station_chunkes = list(self.divide_chunks(station_no, chunkes))
 
-        dataframes = self.parse_data(response, feature_list)
-        return dataframes
+        # for chunk in station_chunkes:
+        #     response = self.request_observations( chunk, property=property, procedure=procedure, t_begin=t_begin, t_end=t_end, )
+        #     data = self.parse_data(response, feature_list)
+        #     datasets.append(data)
+
+        # return datasets
+        return self.batch_request_observations(property, procedure, t_begin, t_end, feature_list)
+
+    # def get_observations(self, features, property, procedure, t_begin, t_end, bbox):
+    #     response = self.request(self.actions.GetFeatureOfInterest, features, property, procedure, t_begin, t_end, bbox[0], bbox[1]  )
+    #     response_json = self.xml_to_json(response.text)
+    #     feature_list = self.create_feature_list(response_json, None )
+    #     response = self.request_observations(features, property, procedure, t_begin, t_end)
+
+    #     dataframes = self.parse_data(response, feature_list)
+    #     return dataframes
 
     def request_observations(self, features, property, procedure, t_begin, t_end):
         try:
             response = self.request( self.actions.GetObservation, features,
                                    property, procedure, t_begin, t_end)
-        except response.exceptions.RequestException as e:
-            assert False, f"Test GetObservation failed requestException: {e}"
+        except requests.RequestException as e:
+            assert False, f"GetObservation failed requestException: {e}"
         return response
 
 
@@ -355,7 +400,20 @@ class BomWater():
         for element in node[0].attrib:
             attribs[element] = node[0].attrib[element]    
         return attribs
-           
+
+    def values_count(self, response):
+        root = ET.fromstring(response.text)
+        # Unit and default quality code
+        prefix = './/{http://www.opengis.net/waterml/2.0}'
+        sos_prefix = './/{http://www.opengis.net/sos/2.0}'
+        # Parse time series data
+        query_observationData = f'{sos_prefix}observationData'
+        query_measurement = f'{prefix}MeasurementTVP'
+        observations = root.findall(query_observationData)
+        #Measurement values and associated metadata
+        value_nodes = observations[0].findall(query_measurement)
+        return len(value_nodes)
+    
     def parse_data(self, response, stations=None):
         root = ET.fromstring(response.text)
 
@@ -371,11 +429,12 @@ class BomWater():
         q_foi = f'{om_prefix}featureOfInterest'
         q_proc = f'{om_prefix}procedure'
         q_gen_date = f'{prefix}generationDate'
-        data = []
+        
         ds = {}
         gen_date = root.findall(q_gen_date)[0].text
 
         for ob in root.findall(query_observationData):
+            data = []
             #Observation Meta data
             default_node = ob.findall(f'{prefix}defaultPointMetadata')
             default_properties = self._parse_default_node(default_node)
