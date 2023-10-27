@@ -51,20 +51,20 @@ class spatail_utilty():
         raise Exception('Target not in stations list')
 
     def filter_feature_list(self, feature_list, spatial_file_path, save_path=None):
-        mdb_sites = []
-        shp_mdb = spatial_file_path#'./test/test_data/Spatial/mdb_buffer_1km.shp'
-        mdb = json.loads(gpd.read_file(shp_mdb).to_json())['features'][0]['geometry']
-        mdb_coords = mdb['coordinates']
-        poly_mdb = shapely.geometry.Polygon(mdb_coords[0])#mdb_coords is a multipolgon, so the 2nd index has the main poly of interest
+        sites = []
+        shape_file = spatial_file_path#'./test/test_data/Spatial/mdb_buffer_1km.shp'
+        geometries = json.loads(gpd.read_file(shape_file).to_json())['features'][0]['geometry']
+        coordinates = geometries['coordinates']
+        poly = shapely.geometry.Polygon(coordinates[0])#coordinates is a multipolygon, so the 2nd index has the main poly of interest
 
         for f in feature_list['features']:
             point = shapely.geometry.Point(f['geometry']['coordinates'])
-            if point.within(poly_mdb):
+            if point.within(poly):
         #         print(f'Points X: {point.x}, Point Y: {point.y}')
-                mdb_sites.append(f)
+                sites.append(f)
         if save_path:
-            self.write_json_features(mdb_sites, save_path)#f'./test/test_data/mdb_Watertemp_stations.json')
-        return FeatureCollection(mdb_sites)
+            self.write_json_features(sites, save_path)#f'./test/test_data/mdb_Watertemp_stations.json')
+        return FeatureCollection(sites)
     
     def write_json_features(self, features, file):
         collection = FeatureCollection(features)
