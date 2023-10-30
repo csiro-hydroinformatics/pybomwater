@@ -239,7 +239,7 @@ class test_core(unittest.TestCase):
         lower_left_coords = f'{low_left_lat} {low_left_long}'
         upper_right_coords = f'{upper_right_lat} {upper_right_long}'
         coords = tuple((lower_left_coords, upper_right_coords))
-        t_begin = "1920-01-01T00:00:00+10"
+        t_begin = "2000-01-01T00:00:00+10"
         t_end = "2024-12-31T00:00:00+10"
 
         spatial_path = './test/test_data/Spatial/test_filter_layer.shp'#os.path.join(spatial_test_data_path, 'mdb_buffer_1km.shp')

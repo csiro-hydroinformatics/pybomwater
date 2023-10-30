@@ -315,7 +315,11 @@ class BomWater():
    
 
     def define_request_chunking_size(self, features, property, procedure, start_date, end_date ):
-        request_values_limit = 500000
+        """
+        This is a rough stab at determining a chunk size.
+        Trying to balance between making too many requests and a response size which is too large
+        """
+        request_values_limit = 500000#BoM have a Constraint of 2000000 values specified however this does not seem real as the request fails if we try to get close to this value.
         size = 2
         feat_count = len(features)
 
