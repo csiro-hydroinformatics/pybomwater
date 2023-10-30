@@ -25,6 +25,7 @@ geopandas = "^0.14.0"
 xarray = "^2023.9.0"
 scipy = "^1.11.3"
 netcdf4 = "^1.6.4"
+wheel = "^0.41.2"
 
 
 [build-system]

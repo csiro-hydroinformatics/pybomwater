@@ -41,6 +41,7 @@ setuptools.setup(
     install_requires=[
         'requests',
         'iso8601',
+        'wheel',
         'pytz',
         'json5',
         'xmltodict',
