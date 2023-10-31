@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pybomwater"
-version = "0.0.8"
+version = "0.1.0"
 description = "A python tool for requesting data from BoM Sensor Observation Service (SOS2, as WaterML 2.0 format)"
 authors = ["Andrew Freebairn <andrew.freebairn@csiro.au>"]
 license = "CSIRO Open Source Software Licence Agreement (variation of the BSD / MIT License)"
