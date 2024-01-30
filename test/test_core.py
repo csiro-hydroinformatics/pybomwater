@@ -325,6 +325,52 @@ class test_core(unittest.TestCase):
         assert stationNo == os.path.basename(data.station_no), "Not expected station"
         assert len(data.dims) == 1
 
+    def test_mdb_filtered_get_observations(self):
+        _bm = bm.BomWater()
+        procedure = _bm.procedures.Pat4_C_B_1_DailyMean
+        prop = _bm.properties.Water_Course_Discharge
+        
+        stationNo = "414201"
+        coordinates = [ 143.169863, -34.719669]
+
+        #Whole of the MDB
+        # low_left_lat = -37.505032
+        # low_left_long = 138.00
+        # upper_right_lat = -24.00
+        # upper_right_long = 154.00
+
+        #Test bounding box
+        low_left_lat = -34.80
+        low_left_long = 143.10
+        upper_right_lat = -34.70
+        upper_right_long = 143.20
+
+        lower_left_coords = f'{low_left_lat} {low_left_long}'
+        upper_right_coords = f'{upper_right_lat} {upper_right_long}'
+        coords = tuple((lower_left_coords, upper_right_coords))
+
+        t_begin = "2000-01-01T00:00:00+10"
+        t_end = "2022-12-31T00:00:00+10"
+
+        spatial_path = './test/test_data/Spatial/mdb_buffer_1km.shp'
+        results = _bm.get_spatially_filtered_observations( None, spatial_path, coords, prop, procedure, t_begin, t_end)
+        
+        # This test can be used on a local machine for writing to disk
+        #a_path = ''
+        # for r in results:
+        #     paths = []
+        #     for set in r:
+        #         base_path = f'./test/test_data/mdb_water_temp'
+        #         file_name = f'{os.path.basename(set)}.nc'
+        #         paths.append(os.path.join(base_path, file_name))
+        #     a_path = paths[0]
+        #     xr.save_mfdataset(r.values(), paths, mode='w', format="NETCDF4", groups=None, engine=None, compute=True )
+
+        data = results[0]['http://bom.gov.au/waterdata/services/stations/414201']#xr.open_dataset(a_path)
+        #Correct coordinates and station found
+        assert all([a == b for a, b in zip(data.coordinates, coordinates)]), "Not expected coordinates"
+        assert stationNo == os.path.basename(data.station_no), "Not expected station"
+        assert len(data.dims) == 1
 
     def load_nc_file(self):
         path = './test/test_data/mdb_water_temp/222027.nc'
