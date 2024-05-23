@@ -55,6 +55,7 @@ setuptools.setup(
 
 # https://packaging.python.org/tutorials/packaging-projects/
 #python setup.py sdist bdist_wheel
+#while venv is active `poetry publish`
 #twine upload --repository testpypi dist/*
 # or for actual pypi use the following
 #twine upload --repository pypi dist/*
