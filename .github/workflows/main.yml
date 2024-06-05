@@ -8,7 +8,8 @@ on:
   push:
   pull_request:
     branches: [ main ]
-
+env:
+  PYTEST_RUN_PATH: $GITHUB_WORKSPACE\..\tests
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -44,4 +45,6 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         
       - name: Activate env and Test with pytest
+        env:
+          PYTEST_PLUGINS: pytest_github_actions_annotate_failures
         run: poetry run pytest
