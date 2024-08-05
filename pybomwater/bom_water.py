@@ -103,7 +103,7 @@ class BomWater():
         offerings = getCap_json['sos:Capabilities']['sos:contents']['sos:Contents']['swes:offering']
         for off in offerings:
             proc = os.path.basename(off['sos:ObservationOffering']['swes:procedure'])
-            proc = re.sub('\W+', '_', proc)
+            proc = re.sub(r'\W+', '_', proc)
             self.procedures.set_value(proc, proc)
 
         '''Features'''
@@ -115,7 +115,7 @@ class BomWater():
             long_statioId = getfeature_json['features'][index]['properties']['long_name']
 
             name =  getfeature_json['features'][index]['properties']['name']
-            name = re.sub('\W+', '_', name)
+            name = re.sub(r'\W+', '_', name)
             # stationId = getfeature_json['stationID']stationID
             self.features.set_value(name, long_statioId)
 

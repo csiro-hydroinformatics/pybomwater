@@ -101,7 +101,7 @@ class test_core(unittest.TestCase):
         assert (ts.Interpolation == "Continuous").all(), "Interpolation not continuous"
         assert len(ts.dims) == 1
 
-        qual = xr.CFTimeIndex.value_counts(ts.Quality)
+        qual = xr.CFTimeIndex.value_counts(ts.Quality.values)
         assert qual[90] == 1075
         assert qual[10] == 295
         assert qual[110] == 172
