@@ -17,7 +17,6 @@ pytest = "^7.4.2"
 lxml = "^4.9.3"
 xmltodict = "^0.13.0"
 pandas = "^2.1.1"
-fiona = "^1.9.4.post1"
 codecov = "^2.1.13"
 pytest-cov = "^4.1.0"
 owslib = "^0.29.2"
@@ -28,6 +27,7 @@ netcdf4 = "^1.6.4"
 wheel = "^0.41.2"
 setuptools = "^70.0.0"
 pytest-github-actions-annotate-failures = "^0.2.0"
+fiona = "1.10b2"
 
 
 [build-system]

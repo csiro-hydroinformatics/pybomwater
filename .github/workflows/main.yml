@@ -21,7 +21,7 @@ jobs:
         python-version: ["3.12.2"]
         poetry-version: [1.8.2]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -32,7 +32,7 @@ jobs:
           poetry-version: ${{ matrix.poetry-version }}
           
       - name: Cache Poetry virtualenv
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         id: cache
         with:
           path: ~/.virtualenvs
