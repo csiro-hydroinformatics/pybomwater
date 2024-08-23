@@ -5,7 +5,7 @@ A python tool for requesting data from BoM Sensor Observation Service (SOS2, as 
 [![codecov](https://codecov.io/gh/csiro-hydroinformatics/pybomwater/branch/main/graph/badge.svg?token=uj1VUQu7dT)](https://codecov.io/gh/csiro-hydroinformatics/pybomwater)
 
 
-This package has been developed to access to the BoM Water Data Sensor Observation Service (SOS). With a goal to easily and efficiently integrate data into scientific workflows  
+This package has been developed to access to the BoM Water Data Sensor Observation Service (SOS) with a goal to easily and efficiently integrate data into scientific workflows  
 
 ## License
 MIT-derived (see [License.txt](LICENSE))
