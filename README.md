@@ -1,7 +1,8 @@
 # BoM Water
 A python tool for requesting data from BoM Sensor Observation Service (SOS2, as WaterML 2.0 format)
 
-[![license](http://img.shields.io/badge/license-MIT-blue.svg)]() ![status](https://img.shields.io/badge/status-alpha-blue.svg) [![CI](https://github.com/csiro-hydroinformatics/pybomwater/actions/workflows/main.yml/badge.svg)](https://github.com/csiro-hydroinformatics/pybomwater/actions/workflows/main.yml)   ![pypi](https://img.shields.io/pypi/v/pybomwater.svg?logo=python&logoColor=white) 
+![website](https://img.shields.io/website?url=http%3A%2F%2Fwww.bom.gov.au%2Fwaterdata%2F)
+![license](http://img.shields.io/badge/license-MIT-blue.svg) ![status](https://img.shields.io/badge/status-alpha-blue.svg) [![CI](https://github.com/csiro-hydroinformatics/pybomwater/actions/workflows/main.yml/badge.svg)](https://github.com/csiro-hydroinformatics/pybomwater/actions/workflows/main.yml) ![pypi](https://img.shields.io/pypi/v/pybomwater.svg?logo=python&logoColor=white) 
 [![codecov](https://codecov.io/gh/csiro-hydroinformatics/pybomwater/branch/main/graph/badge.svg?token=uj1VUQu7dT)](https://codecov.io/gh/csiro-hydroinformatics/pybomwater)
 
 
