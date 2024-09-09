@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 import requests
 import iso8601
 import pytz
@@ -47,7 +47,6 @@ class Action:
 
     @property
     def GetCapabilities(self):
-        """The GetCapabilities property."""
         return "http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=GetCapabilities"
 
     # GetDescribeSensor = 'http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=DescribeSensor'
@@ -87,6 +86,7 @@ class Procedure(Builder_Property):
 
 
 class BomWater:
+    """A facade to perform queries on the Australian Bureau of Meteorology Water Data Online service"""
     def __init__(self):
         # self._module_dir = os.path.dirname(__file__)
         self.actions = Action()
@@ -94,7 +94,7 @@ class BomWater:
         self.properties = Property()
         self.procedures = Procedure()
 
-        self.cache = os.path.join(str(os.path.expanduser("~")), "bom_water", "cache")
+        self.cache = os.path.join(str(os.path.expanduser("~")), ".cache", "bom_water")
         self.waterML_GetCapabilities = os.path.join(
             self.cache, "waterML_GetCapabilities.json"
         )
@@ -234,13 +234,13 @@ class BomWater:
             + temp_filter_close
         )
 
-    def feature_of_interest(self, station_id):
+    def feature_of_interest(self, station_id:Optional[str]):
         return f"<sos:featureOfInterest>{station_id}</sos:featureOfInterest>"
 
-    def observed_property(self, prop):
+    def observed_property(self, prop:Optional[str]):
         return f"<sos:observedProperty>http://bom.gov.au/waterdata/services/parameters/{prop}</sos:observedProperty>"
 
-    def procedure(self, proc):
+    def procedure(self, proc:Optional[str]):
         return f"<sos:procedure>http://bom.gov.au/waterdata/services/tstypes/{proc}</sos:procedure>"
 
     def spatial(self, action: str, lower_corner: float, upper_corner: float):
@@ -270,21 +270,21 @@ class BomWater:
             + spatial_filter_end
         )
 
-    def bom_url_KVP_builder(self, action, query):
+    def bom_url_KVP_builder(self, action:str, query:str):
         """KVP URL builder"""
         endpoint = f"http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={action}"
         return f"{endpoint}&{query}"
 
     def build_payload(
         self,
-        action,
-        feature=None,
-        prop=None,
-        proced=None,
-        begin=None,
-        end=None,
-        lower_corner=None,
-        upper_corner=None,
+        action:str,
+        feature:Optional[str]=None,
+        prop:Optional[str]=None,
+        proced:Optional[str]=None,
+        begin:Optional[str]=None,
+        end:Optional[str]=None,
+        lower_corner:Optional[float]=None,
+        upper_corner:Optional[float]=None,
     ):
         """
         Payload builder
@@ -315,7 +315,7 @@ class BomWater:
         lower_corner: Optional[float] = None,
         upper_corner: Optional[float] = None,
     ):
-        if action == Action.GetCapabilities:
+        if action == self.actions.GetCapabilities:
             return requests.get(action)
         else:
             endpoint = f"http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
@@ -345,7 +345,7 @@ class BomWater:
             return qcodes
 
         for nd in node[0]:
-            for key, field in nd.items():
+            for _, field in nd.items():
                 value = re.sub(".*/", "", field)
                 if re.search("interpolation", field):
                     # Found interpolation field
@@ -428,7 +428,7 @@ class BomWater:
         with open(file) as json_file:
             return json.load(json_file)
 
-    def create_feature_list(self, bom_response_foi, path):
+    def create_feature_list(self, bom_response_foi:Dict[str,Any], path):
         """This is used to create a feature list for reuse"""
 
         # feature_list = []
