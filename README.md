@@ -1,11 +1,12 @@
 # BoM Water
 A python tool for requesting data from BoM Sensor Observation Service (SOS2, as WaterML 2.0 format)
 
-[![license](http://img.shields.io/badge/license-MIT-blue.svg)]() ![status](https://img.shields.io/badge/status-alpha-blue.svg) [![Build status - master](https://travis-ci.com/csiro-hydroinformatics/pybomwater.svg?branch=main)]()  ![pypi](https://img.shields.io/pypi/v/bomwater.svg?logo=python&logoColor=white) 
+![website](https://img.shields.io/website?url=http%3A%2F%2Fwww.bom.gov.au%2Fwaterdata%2F)
+![license](http://img.shields.io/badge/license-MIT-blue.svg) ![status](https://img.shields.io/badge/status-alpha-blue.svg) [![CI](https://github.com/csiro-hydroinformatics/pybomwater/actions/workflows/main.yml/badge.svg)](https://github.com/csiro-hydroinformatics/pybomwater/actions/workflows/main.yml) ![pypi](https://img.shields.io/pypi/v/pybomwater.svg?logo=python&logoColor=white) 
 [![codecov](https://codecov.io/gh/csiro-hydroinformatics/pybomwater/branch/main/graph/badge.svg?token=uj1VUQu7dT)](https://codecov.io/gh/csiro-hydroinformatics/pybomwater)
 
 
-This package has been developed to access to the BoM Water Data Sensor Observation Service (SOS). With a goal to easily and efficiently integrate data into scientific workflows  
+This package has been developed to access to the BoM Water Data Sensor Observation Service (SOS) with a goal to easily and efficiently integrate data into scientific workflows  
 
 ## License
 MIT-derived (see [License.txt](LICENSE))
@@ -13,11 +14,13 @@ MIT-derived (see [License.txt](LICENSE))
 ## Installation
 From pypi:
 
-`pip install bomwater`
+`pip install pybomwater`
 
 From source:
-
-`python setup.py install`
+- Using [`poetry`](https://python-poetry.org/docs/)
+  - I like to keep the `.venv` in my project directory so I use `poetry config --local virtualenvs.in-project true`
+  - `poetry install` which will install the dependencies listed in the `poetry.lock`
+  - `poetry shell` which is initialize the environment within your running application (eg cmd), or in VS Code `Cmd+Shift+p` and then type `Python Interpreter` and select the environment you just built.
 
 ## Usage
 see [Jupyter Notebook example](https://github.com/csiro-hydroinformatics/bomwater-notebook)

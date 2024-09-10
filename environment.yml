@@ -1,4 +1,4 @@
-name: bom_water_env
+name: pybomwater_env
 channels:
   - defaults
   - conda-forge # voila and ipyfilechooser found there.

@@ -7,7 +7,7 @@ import os
 here = os.path.abspath(os.path.dirname(__file__))
 
 verstr = 'unknown'
-VERSIONFILE = "bom_water/_version.py"
+VERSIONFILE = "pybomwater/_version.py"
 with open(VERSIONFILE, "r")as f:
     verstrline = f.read().strip()
     pattern = re.compile(r"__version__ = ['\"](.*)['\"]")
@@ -25,13 +25,11 @@ CLASSIFIERS = ['Development Status :: 3 - Alpha',
                 'Topic :: Scientific/Engineering :: Hydrology',
                 'License :: OSI Approved :: BSD License',
                 'Operating System :: OS Independent',
-                'Programming Language :: Python',
-                'Programming Language :: Python :: 3.6',
-                'Programming Language :: Python :: 3.7'
+                'Programming Language :: Python'
                 ]
 
 setuptools.setup(
-    name='bomwater', # package names need not start with 'py'
+    name='pybomwater', # package names need not start with 'py'
     version=verstr,
     description='A tool for requesting data from BoM Water Data service.',
     long_description=long_description,
@@ -39,10 +37,11 @@ setuptools.setup(
     author='Andrew Freebairn',
     author_email='andrew.freebairn@csiro.au',
     #   packages = setuptools.find_packages(),
-    packages=['bom_water'],
+    packages=['pybomwater'],
     install_requires=[
         'requests',
         'iso8601',
+        'wheel',
         'pytz',
         'json5',
         'xmltodict',
@@ -57,4 +56,7 @@ setuptools.setup(
 
 # https://packaging.python.org/tutorials/packaging-projects/
 #python setup.py sdist bdist_wheel
+#while venv is active `poetry publish`
 #twine upload --repository testpypi dist/*
+# or for actual pypi use the following
+#twine upload --repository pypi dist/*
