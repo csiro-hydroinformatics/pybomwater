@@ -209,6 +209,31 @@ class test_core(unittest.TestCase):
             else:
                 assert False, "Feature not found"
 
+    def test_list_index_out_of_range(self):
+        _bm = bm.BomWater()
+        procedure = _bm.procedures.Pat1_C_B_1_DailyMean
+        prop = _bm.properties.Water_Temperature
+
+        # Setup bounding box for BoM api spatial filter query
+        low_left_lat = -37.505032
+        low_left_long = 138.00
+        upper_right_lat = -24.00
+        upper_right_long = 154.00
+
+        lower_left_coords = f'{low_left_lat} {low_left_long}'
+        upper_right_coords = f'{upper_right_lat} {upper_right_long}'
+        coords = tuple((lower_left_coords, upper_right_coords))
+
+        t_begin = "1800-01-01T00:00:00+10"
+        t_end = "2030-12-31T00:00:00+10"
+
+        spat_dir = r'.\\test\\test_data\\Spatial'
+        spatial_path = os.path.join( spat_dir, 'mdb_buffer_1km.shp')#'./test/test_data/Spatial/mdb_buffer_1km.shp'#
+        assert os.path.exists(spatial_path)
+
+        results = _bm.get_spatially_filtered_observations( None, str(spatial_path), coords, prop, procedure, t_begin, t_end)
+        assert len(results) > 0, 'No results found'
+
     def divide_chunks(self, l, n):
         # looping till length l
         for i in range(0, len(l), n):

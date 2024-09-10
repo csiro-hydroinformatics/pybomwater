@@ -332,7 +332,10 @@ class BomWater():
                 values_count = self.values_count(response)
                 # size = request_values_limit/(values_count)#*len(features)
                 sample_sizes.append(values_count)
-            return math.floor(request_values_limit/max(sample_sizes)*0.9)
+            if max(sample_sizes) > 0:
+                return math.floor((request_values_limit/max(sample_sizes)*0.9)/2)
+            else:
+                return 3
         return size
     
     def get_spatially_filtered_observations(self, features, spatial_path, bbox, property, procedure, t_begin, t_end):
@@ -407,15 +410,17 @@ class BomWater():
 
     def values_count(self, response):
         root = ET.fromstring(response.text)
+        value_nodes = []
         # Unit and default quality code
         prefix = './/{http://www.opengis.net/waterml/2.0}'
         sos_prefix = './/{http://www.opengis.net/sos/2.0}'
         # Parse time series data
         query_observationData = f'{sos_prefix}observationData'
         query_measurement = f'{prefix}MeasurementTVP'
-        observations = root.findall(query_observationData)
+        for obs in root.findall(query_observationData):
         #Measurement values and associated metadata
-        value_nodes = observations[0].findall(query_measurement)
+            value_nodes = obs[0].findall(query_measurement)
+            break
         return len(value_nodes)
     
     def parse_data(self, response, stations=None):
