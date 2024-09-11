@@ -15,6 +15,10 @@ import xarray as xr
 import shapely
 import numpy as np
 
+import requests
+import xmltodict
+import pandas as pd
+
 FTEST = Path(__file__).resolve().parent
 
 class test_core(unittest.TestCase):
@@ -442,6 +446,68 @@ class test_core(unittest.TestCase):
         target = 'not_in_list'
         with pytest.raises(Exception):
             answer = spatail_utilty.find_station_coordinates_from(target, stations=stations, path=None)
+
+
+    def get_capabilities(self, url):
+        response = requests.get(url)
+        # Parse the XML response
+        data = xmltodict.parse(response.content)
+
+        # Extracting service metadata
+        capabilities_info = data.get('sos:Capabilities', {})
+        
+        # Extracting service identification and provider details
+        service_info = capabilities_info.get('ows:ServiceIdentification', {})
+        provider_info = capabilities_info.get('ows:ServiceProvider', {})
+
+        # Extracting available offerings (e.g., observations)
+        offerings = capabilities_info.get('sos:contents', {}).get('sos:Contents', {}).get('swes:offering', {})# capabilities_info.get('sos:Contents', {}).get('swes:offering', {}).get('sos:ObservationOffering', [])
+
+        # Convert offerings to a more user-friendly format (e.g., DataFrame)
+        offerings_list = []
+        for offering in offerings:
+            offering_details = {
+                'Offering ID': offering.get('@gml:id', 'N/A'),
+                'Procedure': offering.get('sos:procedure', 'N/A'),
+                'ObservableProperty': offering.get('sos:observableProperty', 'N/A'),
+                'FeatureOfInterest': offering.get('sos:featureOfInterest', 'N/A'),
+                'TimePeriod': offering.get('gml:timePeriod', {}).get('gml:beginPosition', 'N/A') + " to " +
+                            offering.get('gml:timePeriod', {}).get('gml:endPosition', 'N/A')
+            }
+            offerings_list.append(offering_details)
+
+        # Create DataFrame for offerings
+        offerings_df = pd.DataFrame(offerings_list)
+
+        # Service info as a summary
+        service_summary = {
+            'Title': service_info.get('ows:Title', 'N/A'),
+            'Abstract': service_info.get('ows:Abstract', 'N/A'),
+            'Provider Name': provider_info.get('ows:ProviderName', 'N/A'),
+            'Service Type': service_info.get('ows:ServiceType', 'N/A'),
+            'Service Version': capabilities_info.get('@version', 'N/A'),
+        }
+
+        return service_summary, offerings_df
+    
+    def future_test_get_cap(self):
+        #TODO In the future the response text needs to be parsed into something usable.  Continue this test with intent to parse the xml into pandas tables
+        url = "http://www.bom.gov.au/waterdata/services?service=SOS&request=GetCapabilities"
+        service_summary, offerings_df = self.get_capabilities(url)
+        print(service_summary)
+        print(offerings_df)
+
+    def future_test_get_feature_of_interest(self):
+        #TODO In the future the response text needs to be parsed into something usable.  Continue this test with intent to parse the xml into pandas tables
+        print("Results")
+
+    def future_test_data_availability(self):
+        #TODO In the future the response text needs to be parsed into something usable.  Continue this test with intent to parse the xml into pandas tables
+        print("Results")
+
+    def future_test_get_observation(self):
+        #TODO In the future the response text needs to be parsed into something usable.  Continue this test with intent to parse the xml into pandas tables
+        print("Results")
 
 if __name__ == '__main__':
     unittest.main()
