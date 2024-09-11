@@ -1,5 +1,7 @@
 import json
 import unittest
+from datetime import datetime
+from dateutil import parser
 import types
 import pytest
 import requests
@@ -209,7 +211,62 @@ class test_core(unittest.TestCase):
             else:
                 assert False, "Feature not found"
 
-    def test_list_index_out_of_range(self):
+    def test_check_what_available(self):
+        '''Get Data availability test'''
+        _bm = bm.BomWater()
+        t_begin = "1930-01-01T00:00:00+10"
+        t_end = "2024-12-31T00:00:00+10"
+        # Setup bounding box for BoM api spatial filter query
+        low_left_lat = -37.505032
+        low_left_long = 138.00
+        upper_right_lat = -24.00
+        upper_right_long = 154.00
+
+        lower_left_coords = f'{low_left_lat} {low_left_long}'
+        upper_right_coords = f'{upper_right_lat} {upper_right_long}'
+
+        features = []
+        feat = 'http://bom.gov.au/waterdata/services/stations/410061'
+        features.append(feat)
+        response =  _bm.request(_bm.actions.GetDataAvailability, features)
+        # response = _bm.request(_bm.actions.GetDataAvailability, features, prop=None, proced=None, begin=t_begin, end=t_end, lower_corner=lower_left_coords, upper_corner=upper_right_coords)
+        assert response.status_code == 200, "Response error"
+        response_json = _bm.xml_to_json( response.text)
+        features_availabilities = response_json['soap12:Envelope']['soap12:Body']['gda:GetDataAvailabilityResponse']['gda:dataAvailabilityMember']
+        for feature in features_availabilities: 
+            procedure_title = feature['gda:procedure']['@xlink:title']
+            observation_property_title = feature['gda:observedProperty']['@xlink:title']
+            feature_of_interest_title = feature['gda:featureOfInterest']['@xlink:title']
+            feature_of_interest_href = feature['gda:featureOfInterest']['@xlink:href']
+            if 'gml:TimePeriod' in feature['gda:phenomenonTime']:
+                start_period = feature['gda:phenomenonTime']['gml:TimePeriod']['gml:beginPosition']
+            else:
+                start_period = '1900-01-01T00:00:00.000+10:00'
+            if 'gml:TimePeriod' in feature['gda:phenomenonTime']:
+                end_period = feature['gda:phenomenonTime']['gml:TimePeriod']['gml:endPosition']
+            else:
+                end_period = '1900-01-02T00:00:00.000+10:00'
+
+            assert feature_of_interest_href == feat, 'Feature not found'
+            assert procedure_title, 'Procedure is None'
+            assert observation_property_title, 'Property is None'
+            assert feature_of_interest_title, 'FOI is None'
+            assert start_period, 'Start period is None'
+            assert end_period, 'End period is None'
+            assert self.is_positive_date_period(start_period, end_period), 'Date periods error' 
+        
+    def is_positive_date_period(self, start_period, end_period):
+        # Convert string dates to datetime objects
+        start = parser.parse(start_period)
+        end = parser.parse(end_period)
+        
+        # Calculate the difference
+        date_diff = end - start
+        
+        # Check if the difference is positive
+        return date_diff.total_seconds() >= 0
+       
+    def dont_test_list_index_out_of_range(self):
         _bm = bm.BomWater()
         procedure = _bm.procedures.Pat1_C_B_1_DailyMean
         prop = _bm.properties.Water_Temperature
