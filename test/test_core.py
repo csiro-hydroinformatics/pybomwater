@@ -79,11 +79,9 @@ class test_core(unittest.TestCase):
         '''Get Feature of interest test'''
         _bm = bm.BomWater()
         '''Todo: Need a small bounding box with known stations contained'''
-        response = _bm.request(_bm.actions.GetFeatureOfInterest,
-                                   "http://bom.gov.au/waterdata/services/stations/GW036501.2.2")
+        response = _bm.request(_bm.actions.GetFeatureOfInterest, "http://bom.gov.au/waterdata/services/stations/GW036501.2.2")
         test_json = _bm.xml_to_json(response.text)#, f'test_GetFeatureOfInterest.json')
-        features = test_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse'][
-            'sos:featureMember']
+        features = test_json['soap12:Envelope']['soap12:Body']['sos:GetFeatureOfInterestResponse']['sos:featureMember']
         long_statioId = features['wml2:MonitoringPoint']['gml:identifier']['#text']
         if os.path.basename(long_statioId) == 'GW036501.2.2':
             assert True, "Test GetFeatureOfInterest passed"

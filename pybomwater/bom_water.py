@@ -27,8 +27,8 @@ class Action:
     def __init__(self):
         pass
 
-    # GetDescribeSensor = 'http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=DescribeSensor'
-    GetCapabilities = 'http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=GetCapabilities'
+    # GetDescribeSensor = 'https://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=DescribeSensor'
+    GetCapabilities = 'https://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request=GetCapabilities'
     GetDataAvailability = "http://www.opengis.net/def/serviceOperation/sos/daRetrieval/2.0/GetDataAvailability"
     GetObservation = "http://www.opengis.net/def/serviceOperation/sos/core/2.0/GetObservation"
     GetFeatureOfInterest = "http://www.opengis.net/def/serviceOperation/sos/foiRetrieval/2.0/GetFeatureOfInterest"
@@ -224,7 +224,7 @@ class BomWater():
 
     # def request(self, action, feature=None, prop=None, proced=None, begin=None, end=None, lower_corner=None,
     #             upper_corner=None):
-    #     endpoint = f"http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
+    #     endpoint = f"https://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
     #     payload = self.build_payload(action, feature, prop, proced, begin, end, lower_corner, upper_corner)
     #     if action == Action.GetCapabilities:
     #         return requests.get(action)
@@ -232,7 +232,7 @@ class BomWater():
 
     def request(self, action, feature=None, prop=None, proced=None, begin=None, end=None, lower_corner=None, upper_corner=None):
         try:
-            endpoint = f"http://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
+            endpoint = f"https://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
             payload = self.build_payload(action, feature, prop, proced, begin, end, lower_corner, upper_corner)
             if action == Action.GetCapabilities:
                 response = requests.get(action)
