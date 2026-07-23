@@ -38,6 +38,7 @@ setuptools.setup(
     author_email='andrew.freebairn@csiro.au',
     #   packages = setuptools.find_packages(),
     packages=['pybomwater'],
+    package_data={'pybomwater': ['cache/*.json']},
     install_requires=[
         'requests',
         'iso8601',

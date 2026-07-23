@@ -4,11 +4,14 @@ import pytz
 import json
 import xmltodict
 import os
+from datetime import datetime, timedelta
 from pathlib import Path
 import re
+import time
 import pandas as pd
 import xml.etree.ElementTree as ET
 import xarray as xr
+from pybomwater._version import __version__
 from pybomwater.spatial_util import spatail_utilty
 import math
 import random
@@ -54,32 +57,55 @@ class Procedure(Builder_Property):
 
 class BomWater():
 
-    def __init__(self):
-        # self._module_dir = os.path.dirname(__file__)
+    def __init__(self, request_interval=1.0, request_timeout=120, max_retries=3, chunk_sample_size=5):
+        self._module_dir = Path(__file__).resolve().parent
         self.actions = Action()
         self.features = Feature()
         self.properties = Property()
         self.procedures = Procedure()
+        self.session = requests.Session()
+        self.session.headers.update({'User-Agent': f'pybomwater/{__version__}'})
+        self.request_interval = request_interval
+        self.request_timeout = request_timeout
+        self.max_retries = max_retries
+        self.chunk_sample_size = chunk_sample_size
+        self._last_request_at = 0
 
         self.cache = os.path.join(str(os.path.expanduser("~")), 'pybomwater', 'cache')
-        self.waterML_GetCapabilities = os.path.join(self.cache, 'waterML_GetCapabilities.json')
-        self.stations = os.path.join(self.cache, 'stations.json')
+        self.package_cache = self._module_dir / 'cache'
+        self.waterML_GetCapabilities = self._cache_file('waterML_GetCapabilities.json')
+        self.stations = self._cache_file('stations.json')
         self.check_cache_status()#This should move to user space not be in module space
         self.init_properties()
 
+    def _cache_file(self, filename):
+        user_path = Path(self.cache) / filename
+        if user_path.exists():
+            return str(user_path)
+
+        package_path = self.package_cache / filename
+        if package_path.exists():
+            return str(package_path)
+
+        return str(user_path)
+
     def check_cache_status(self):
-        if os.path.exists(self.waterML_GetCapabilities):
+        if os.path.exists(self.waterML_GetCapabilities) and os.path.exists(self.stations):
             return
         else:
             print(f'one time creating cache directory and files, this will take a little time please wait.')
             if not os.path.exists(self.cache):
                 os.makedirs(self.cache)
 
-            response = self.request(self.actions.GetCapabilities)
-            self.xml_to_json_via_file(response.text, self.waterML_GetCapabilities)
-            response = self.request(self.actions.GetFeatureOfInterest)
+            if not os.path.exists(self.waterML_GetCapabilities):
+                self.waterML_GetCapabilities = str(Path(self.cache) / 'waterML_GetCapabilities.json')
+                response = self.request(self.actions.GetCapabilities)
+                self.xml_to_json_via_file(response.text, self.waterML_GetCapabilities)
 
-            self.create_feature_list(self.xml_to_json(response.text), self.stations)
+            if not os.path.exists(self.stations):
+                self.stations = str(Path(self.cache) / 'stations.json')
+                response = self.request(self.actions.GetFeatureOfInterest)
+                self.create_feature_list(self.xml_to_json(response.text), self.stations)
             # self.xml_to_json_via_file(response.text, os.path.join(self._module_dir, 'cache/stations.json'))
             print(f'finished creating cache directory and files')
 
@@ -230,24 +256,53 @@ class BomWater():
     #         return requests.get(action)
     #     return requests.post(endpoint, payload)
 
+    def _wait_for_request_slot(self):
+        elapsed = time.monotonic() - self._last_request_at
+        wait = self.request_interval - elapsed
+        if wait > 0:
+            time.sleep(wait)
+
+    def _retry_delay(self, response, attempt):
+        retry_after = response.headers.get('Retry-After') if response is not None else None
+        if retry_after:
+            try:
+                return max(0, float(retry_after))
+            except ValueError:
+                pass
+
+        return min(60, (2 ** attempt) + random.uniform(0, 1))
+
     def request(self, action, feature=None, prop=None, proced=None, begin=None, end=None, lower_corner=None, upper_corner=None):
-        try:
-            endpoint = f"https://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
-            payload = self.build_payload(action, feature, prop, proced, begin, end, lower_corner, upper_corner)
-            if action == Action.GetCapabilities:
-                response = requests.get(action)
-                if response.ok:
-                    return response
+        endpoint = f"https://www.bom.gov.au/waterdata/services?service=SOS&version=2.0&request={os.path.basename(action)}"
+        payload = self.build_payload(action, feature, prop, proced, begin, end, lower_corner, upper_corner)
+        retriable_status_codes = {429, 500, 502, 503, 504}
+
+        for attempt in range(self.max_retries + 1):
+            self._wait_for_request_slot()
+            try:
+                if action == Action.GetCapabilities:
+                    response = self.session.get(action, timeout=self.request_timeout)
                 else:
-                    raise requests.exceptions.RequestException()
-            response = requests.post(endpoint, payload)
+                    response = self.session.post(endpoint, payload, timeout=self.request_timeout)
+                self._last_request_at = time.monotonic()
+            except requests.exceptions.RequestException:
+                self._last_request_at = time.monotonic()
+                if attempt < self.max_retries:
+                    time.sleep(self._retry_delay(None, attempt))
+                    continue
+                raise
+
             if response.ok:
                 return response
-            else:
-                res_content = response.content
-                raise requests.exceptions.RequestException(request=requests, response=response) 
-        except requests.exceptions.RequestException as e:
-            raise e
+
+            if response.status_code in retriable_status_codes and attempt < self.max_retries:
+                time.sleep(self._retry_delay(response, attempt))
+                continue
+
+            message = f'BoM SOS request failed with HTTP {response.status_code}'
+            if response.text:
+                message = f'{message}: {response.text[:500]}'
+            raise requests.exceptions.HTTPError(message, response=response)
 
 
     def _parse_float(self, x):
@@ -313,6 +368,86 @@ class BomWater():
         for i in range(0, len(l), n):
             yield l[i:i + n]
    
+    def _parse_request_datetime(self, value):
+        if isinstance(value, datetime):
+            return value
+
+        return iso8601.parse_date(value)
+
+    def _format_request_datetime(self, value):
+        return value.isoformat(timespec='seconds')
+
+    def _sample_window_duration(self, requested_duration):
+        if requested_duration.total_seconds() <= 0:
+            return timedelta(0)
+
+        one_day = timedelta(days=1)
+        two_days = timedelta(days=2)
+
+        if requested_duration <= one_day:
+            return requested_duration
+
+        one_percent = requested_duration * 0.01
+        if one_percent < one_day:
+            return one_day
+        if one_percent > two_days:
+            return two_days
+        return one_percent
+
+    def _sample_time_windows(self, start_date, end_date):
+        start = self._parse_request_datetime(start_date)
+        end = self._parse_request_datetime(end_date)
+        requested_duration = end - start
+        sample_duration = self._sample_window_duration(requested_duration)
+
+        if sample_duration.total_seconds() <= 0:
+            return []
+
+        max_offset = requested_duration - sample_duration
+        sample_count = max(1, int(self.chunk_sample_size))
+
+        if max_offset.total_seconds() <= 0:
+            return [(start, end)]
+
+        if sample_count == 1:
+            sample_start = start + (max_offset / 2)
+            return [(sample_start, sample_start + sample_duration)]
+
+        windows = []
+        for index in range(sample_count):
+            offset = max_offset * (index / (sample_count - 1))
+            sample_start = start + offset
+            windows.append((sample_start, sample_start + sample_duration))
+        return windows
+
+    def _values_count_by_observation(self, response):
+        root = ET.fromstring(response.text)
+        prefix = './/{http://www.opengis.net/waterml/2.0}'
+        sos_prefix = './/{http://www.opengis.net/sos/2.0}'
+        query_observationData = f'{sos_prefix}observationData'
+        query_measurement = f'{prefix}MeasurementTVP'
+
+        return [
+            len(obs.findall(query_measurement))
+            for obs in root.findall(query_observationData)
+        ]
+
+    def _define_request_chunking_size_from_feature_samples(self, features, property, procedure, start_date, end_date, request_values_limit):
+        feat_count = len(features)
+        sample_count = min(feat_count, max(2, min(int(self.chunk_sample_size), math.floor(feat_count*0.05))))
+        sample_indexes = random.sample(range(0, feat_count), sample_count)
+        sample_sizes = []
+        for s_indx in sample_indexes:
+            feature = features[s_indx]
+            response = self.request_observations( feature, property=property, procedure=procedure, t_begin=start_date, t_end=end_date)
+            values_count = self.values_count(response)
+            # size = request_values_limit/(values_count)#*len(features)
+            sample_sizes.append(values_count)
+        if max(sample_sizes) > 0:
+            return max(1, math.floor((request_values_limit/max(sample_sizes)*0.9)/2))
+        else:
+            return 3
+
 
     def define_request_chunking_size(self, features, property, procedure, start_date, end_date ):
         """
@@ -324,16 +459,39 @@ class BomWater():
         feat_count = len(features)
 
         if feat_count > size:
-            sample_indexes = random.sample(range(0, feat_count), max(2,math.floor(feat_count*0.05)))
+            try:
+                requested_duration = self._parse_request_datetime(end_date) - self._parse_request_datetime(start_date)
+                requested_seconds = requested_duration.total_seconds()
+                sample_windows = self._sample_time_windows(start_date, end_date)
+            except Exception:
+                return self._define_request_chunking_size_from_feature_samples(features, property, procedure, start_date, end_date, request_values_limit)
+
             sample_sizes = []
-            for s_indx in sample_indexes:
-                feature = features[s_indx]
-                response = self.request_observations( feature, property=property, procedure=procedure, t_begin=start_date, t_end=end_date)
-                values_count = self.values_count(response)
-                # size = request_values_limit/(values_count)#*len(features)
-                sample_sizes.append(values_count)
-            if max(sample_sizes) > 0:
-                return math.floor((request_values_limit/max(sample_sizes)*0.9)/2)
+
+            for sample_start, sample_end in sample_windows:
+                sample_seconds = (sample_end - sample_start).total_seconds()
+                if sample_seconds <= 0:
+                    continue
+
+                try:
+                    response = self.request_observations(
+                        features,
+                        property=property,
+                        procedure=procedure,
+                        t_begin=self._format_request_datetime(sample_start),
+                        t_end=self._format_request_datetime(sample_end)
+                    )
+                except Exception:
+                    return self._define_request_chunking_size_from_feature_samples(features, property, procedure, start_date, end_date, request_values_limit)
+
+                observation_sizes = self._values_count_by_observation(response)
+                if len(observation_sizes) == 0:
+                    continue
+
+                sample_sizes.append(max(observation_sizes) * (requested_seconds / sample_seconds))
+
+            if len(sample_sizes) > 0 and max(sample_sizes) > 0:
+                return max(1, math.floor((request_values_limit/max(sample_sizes)*0.9)/2))
             else:
                 return 3
         return size
@@ -409,19 +567,7 @@ class BomWater():
         return attribs
 
     def values_count(self, response):
-        root = ET.fromstring(response.text)
-        value_nodes = []
-        # Unit and default quality code
-        prefix = './/{http://www.opengis.net/waterml/2.0}'
-        sos_prefix = './/{http://www.opengis.net/sos/2.0}'
-        # Parse time series data
-        query_observationData = f'{sos_prefix}observationData'
-        query_measurement = f'{prefix}MeasurementTVP'
-        for obs in root.findall(query_observationData):
-        #Measurement values and associated metadata
-            value_nodes = obs[0].findall(query_measurement)
-            break
-        return len(value_nodes)
+        return sum(self._values_count_by_observation(response))
     
     def parse_data(self, response, stations=None):
         root = ET.fromstring(response.text)

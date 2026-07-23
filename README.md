@@ -32,6 +32,12 @@ The first time a BomWater object is instantiated (bm = bom_water.BomWater()) a c
 
 ---
 
+## Running tests
+By default, `pytest` skips tests that call the live BoM SOS service. To run those
+integration tests explicitly:
+
+`PYBOMWATER_RUN_LIVE=1 pytest -m live_bom`
+
 ## Documentation
 Bureau of Meteorology (BoM) documentation on using their SOS service is available at the following links:
 * [BoM Water Data service ](http://www.bom.gov.au/waterdata/services)
