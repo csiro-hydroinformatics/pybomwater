@@ -1,0 +1,14 @@
+# Optional dependencies for the live companion-notebook integration test.
+# Pint 0.20 uses NumPy APIs removed in NumPy 2.
+numpy>=1.26,<2
+nbconvert>=7,<8
+ipykernel>=6,<7
+sidecar>=0.8,<1
+ipyleaflet>=0.17,<1
+ipywidgets>=8,<9
+ipyfilechooser>=0.6,<1
+matplotlib>=3.6,<4
+plotly>=5.18,<6
+pint==0.20
+pint-xarray==0.3
+cftime>=1.6,<2
