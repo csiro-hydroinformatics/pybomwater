@@ -32,6 +32,27 @@ The first time a BomWater object is instantiated (bm = bom_water.BomWater()) a c
 
 ---
 
+## Running tests
+By default, `pytest` skips tests that call the live BoM SOS service. To run those
+integration tests explicitly:
+
+`PYBOMWATER_RUN_LIVE=1 pytest -m live_bom`
+
+The progressive observation load test is gated separately. It makes five
+increasingly large requests, stops immediately on HTTP 429, and prints timings,
+response sizes, observation counts, and any rate-limit headers:
+
+`PYBOMWATER_RUN_LOAD=1 pytest -m load_bom -s`
+
+The companion notebook test is also gated separately. It clones
+`bomwater-notebook` into a temporary directory and executes every notebook
+against the current `pybomwater` checkout. Install its optional runtime and run
+it with:
+
+`python -m pip install -r requirements-notebooks.txt`
+
+`PYBOMWATER_RUN_NOTEBOOKS=1 pytest -m notebook_bom -s`
+
 ## Documentation
 Bureau of Meteorology (BoM) documentation on using their SOS service is available at the following links:
 * [BoM Water Data service ](http://www.bom.gov.au/waterdata/services)

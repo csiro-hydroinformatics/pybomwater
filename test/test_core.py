@@ -1,6 +1,6 @@
 import json
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser
 import types
 import pytest
@@ -109,6 +109,84 @@ class test_core(unittest.TestCase):
         assert qual[90] == 1075
         assert qual[10] == 295
         assert qual[110] == 172
+
+    def test_sample_time_windows_do_not_exceed_requested_range(self):
+        _bm = bm.BomWater()
+
+        windows = _bm._sample_time_windows(
+            "2020-01-01T00:00:00+10",
+            "2020-01-01T12:00:00+10"
+        )
+
+        assert len(windows) == 1
+        assert windows[0][1] - windows[0][0] == timedelta(hours=12)
+
+    def test_sample_time_windows_are_bounded_across_long_range(self):
+        _bm = bm.BomWater(chunk_sample_size=3)
+
+        windows = _bm._sample_time_windows(
+            "2020-01-01T00:00:00+10",
+            "2020-10-27T00:00:00+10"
+        )
+
+        assert len(windows) == 3
+        assert all(end - start == timedelta(days=2) for start, end in windows)
+        assert windows[0][0] == _bm._parse_request_datetime("2020-01-01T00:00:00+10")
+        assert windows[-1][1] == _bm._parse_request_datetime("2020-10-27T00:00:00+10")
+
+    def test_values_count_counts_all_observation_blocks(self):
+        response = types.SimpleNamespace()
+        response.text = """
+        <soap12:Envelope
+            xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"
+            xmlns:sos="http://www.opengis.net/sos/2.0"
+            xmlns:wml2="http://www.opengis.net/waterml/2.0">
+            <soap12:Body>
+                <sos:GetObservationResponse>
+                    <sos:observationData>
+                        <wml2:MeasurementTVP />
+                        <wml2:MeasurementTVP />
+                    </sos:observationData>
+                    <sos:observationData>
+                        <wml2:MeasurementTVP />
+                    </sos:observationData>
+                </sos:GetObservationResponse>
+            </soap12:Body>
+        </soap12:Envelope>
+        """
+
+        _bm = bm.BomWater()
+
+        assert _bm._values_count_by_observation(response) == [2, 1]
+        assert _bm.values_count(response) == 3
+
+    def test_define_request_chunking_size_uses_short_time_samples(self):
+        _bm = bm.BomWater(chunk_sample_size=3)
+        features = [f"http://bom.gov.au/waterdata/services/stations/{index}" for index in range(10)]
+        calls = []
+
+        def fake_request_observations(features, property, procedure, t_begin, t_end):
+            calls.append((features, t_begin, t_end))
+            return types.SimpleNamespace(text="")
+
+        _bm.request_observations = fake_request_observations
+        _bm._values_count_by_observation = lambda response: [4, 2]
+
+        chunk_size = _bm.define_request_chunking_size(
+            features,
+            property="Water_Temperature",
+            procedure="Pat1_C_B_1_DailyMean",
+            start_date="2020-01-01T00:00:00+10",
+            end_date="2020-10-27T00:00:00+10"
+        )
+
+        assert chunk_size == 375
+        assert len(calls) == 3
+        assert all(call[0] == features for call in calls)
+        for _, t_begin, t_end in calls:
+            begin = _bm._parse_request_datetime(t_begin)
+            end = _bm._parse_request_datetime(t_end)
+            assert end - begin == timedelta(days=2)
 
 
     def test_get_data_availability(self):

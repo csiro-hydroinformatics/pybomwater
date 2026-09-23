@@ -5,6 +5,9 @@ description = "A python tool for requesting data from BoM Sensor Observation Ser
 authors = ["Andrew Freebairn <andrew.freebairn@csiro.au>"]
 license = "CSIRO Open Source Software Licence Agreement (variation of the BSD / MIT License)"
 readme = "README.md"
+include = [
+    { path = "pybomwater/cache/*.json", format = ["sdist", "wheel"] }
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
